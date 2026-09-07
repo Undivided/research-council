@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 PROJECT=$1
 QUESTION=$2
 MODEL="gemma4:31b-cloud"
@@ -139,12 +138,7 @@ Requirements:
 Return only the report content.
 "
 
-    echo "$PROMPT" > /tmp/council-prompt.txt
-
-echo "Prompt size:"
-wc -c /tmp/council-prompt.txt
-
-echo "$PROMPT" | ollama run "$MODEL" > "$FILE"
+    ollama run "$MODEL" "$PROMPT" > "$FILE"
 
     echo "Saved:"
     echo "$FILE"
@@ -153,60 +147,18 @@ echo "$PROMPT" | ollama run "$MODEL" > "$FILE"
     # Archivist creates persistent knowledge
     #
 
-if [ "$AGENT" = "archivist" ]; then
+    if [ "$AGENT" = "archivist" ]; then
 
-    KNOWLEDGE_TIMESTAMP=$(date +%H%M%S)
+        KNOWLEDGE_TIMESTAMP=$(date +%H%M%S)
 
-    KNOWLEDGE_FILE="$KNOWLEDGE/entries/entry-$KNOWLEDGE_TIMESTAMP.md"
+        KNOWLEDGE_FILE="$KNOWLEDGE/entries/entry-$KNOWLEDGE_TIMESTAMP.md"
 
-    echo "---" > "$KNOWLEDGE_FILE"
-    echo "id: $KNOWLEDGE_TIMESTAMP" >> "$KNOWLEDGE_FILE"
-    echo "type: research_entry" >> "$KNOWLEDGE_FILE"
-    echo "domain:" >> "$KNOWLEDGE_FILE"
-    echo "  - scientific_decision_making" >> "$KNOWLEDGE_FILE"
-    echo "topics:" >> "$KNOWLEDGE_FILE"
-    echo "  - research_quality" >> "$KNOWLEDGE_FILE"
-    echo "  - decision_frameworks" >> "$KNOWLEDGE_FILE"
-    echo "confidence: medium" >> "$KNOWLEDGE_FILE"
-    echo "created: $(date +%Y-%m-%d)" >> "$KNOWLEDGE_FILE"
-    echo "---" >> "$KNOWLEDGE_FILE"
-    echo "" >> "$KNOWLEDGE_FILE"
+        cp "$FILE" "$KNOWLEDGE_FILE"
 
-if grep -q "ARCHIVAL REPORT" "$FILE"; then
+        echo "Knowledge entry:"
+        echo "$KNOWLEDGE_FILE"
 
-    grep -A 10000 "ARCHIVAL REPORT" "$FILE" >> "$KNOWLEDGE_FILE"
-    #
-    # Validate knowledge entry
-    #
-
-    if [ ! -s "$KNOWLEDGE_FILE" ]; then
-        echo "ERROR: Knowledge entry is empty"
-        rm "$KNOWLEDGE_FILE"
-        exit 1
     fi
-
-    if ! grep -q "ARCHIVAL REPORT" "$KNOWLEDGE_FILE"; then
-        echo "ERROR: Knowledge entry missing archival report"
-        rm "$KNOWLEDGE_FILE"
-        exit 1
-    fi
-
-    if [ "$(wc -c < "$KNOWLEDGE_FILE")" -lt 1000 ]; then
-        echo "ERROR: Knowledge entry suspiciously small"
-        rm "$KNOWLEDGE_FILE"
-        exit 1
-    fi
-else
-
-    rm "$KNOWLEDGE_FILE"
-    echo "Archivist failed validation. No knowledge entry created."
-
-fi
-
-    echo "Knowledge entry:"
-    echo "$KNOWLEDGE_FILE"
-
-fi
 
     OUTPUTS+=("$FILE")
 
@@ -215,6 +167,7 @@ done
 #
 # Create research run record
 #
+
 RUN_ID=$(date +%Y%m%d-%H%M%S)
 
 RUN_FILE="$BASE/runs/run-$RUN_ID.md"
