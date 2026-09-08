@@ -1,0 +1,136 @@
+# Research Council Evolution Notebook
+
+## Purpose
+
+A running record of the development of Research Council:
+an experiment in building an AI-assisted learning institution.
+
+This notebook records:
+- ideas
+- observations
+- experiments
+- failures
+- architectural decisions
+- influences
+
+The goal is not only to build software, but to understand what
+structures allow knowledge systems to improve over time.
+
+---
+
+# Origin
+
+The project began as an attempt to create a useful personal AI system.
+
+The original questions:
+
+- How can AI become a reliable assistant?
+- How can it remember?
+- How can it challenge assumptions?
+- How can it help a person or family learn over decades?
+
+The investigation gradually shifted from "AI assistant" toward
+"institutional intelligence."
+
+---
+
+# Core Hypothesis
+
+Intelligence is not only a property of a model.
+
+It emerges from:
+
+- specialized perspectives
+- communication pathways
+- criticism
+- memory
+- feedback loops
+- governance
+
+A system may become more capable by improving organization,
+not only by increasing model size.
+
+---
+
+# R1 Reproducibility Review
+
+Finding:
+
+The system contained useful roles, but information pathways were
+insufficient.
+
+Important discoveries:
+
+- environment is part of the experiment
+- memory state is part of the experiment
+- reproducibility requires controlling more than code and model
+
+---
+
+# v0.2 Information Topology
+
+Intervention:
+
+Connect specialist outputs into institutional communication flow.
+
+New pathway:
+
+Specialists
+    ↓
+Editor
+    ↓
+Archivist
+    ↓
+Institutional memory
+
+Observed effects:
+
+- Editor began synthesizing competing perspectives
+- disagreement was preserved
+- provenance survived archival transfer
+- memory captured reasoning structure
+
+---
+
+# Systems Science Connections
+
+The project appears related to:
+
+- scientific method
+- systems thinking
+- cybernetics
+- organizational learning
+- collective intelligence
+- extended cognition
+
+The recurring pattern:
+
+Observation
+    ↓
+Hypothesis
+    ↓
+Experiment
+    ↓
+Feedback
+    ↓
+Memory
+    ↓
+Improved future action
+
+---
+
+# Future Questions
+
+- How should memory be retrieved?
+- What should be remembered?
+- What should be forgotten?
+- How should an institution detect its own mistakes?
+- Can a personal AI become a long-term learning companion?
+- Can families preserve knowledge across generations?
+
+---
+
+# Notes
+
+Add observations here.
+
