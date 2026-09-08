@@ -29,6 +29,7 @@ echo "Saved: $RESULT_DIR/condition-b-self-critique.md"
 
 echo
 echo "Running Condition C — Research Council v0.1"
+find knowledge/entries -maxdepth 1 -type f -printf '%f\n' | sort > "$RESULT_DIR/.knowledge-before"
 touch "$RESULT_DIR/.council-start"
 ./benchmarks/run-council-v0.1.sh "$QUESTION" > "$RESULT_DIR/condition-c-council.log"
 
@@ -39,3 +40,14 @@ find projects/benchmark-v0.1 \
     -type f \
     -newer "$RESULT_DIR/.council-start" \
     -exec cp --parents {} "$RESULT_DIR/condition-c-artifacts/" \;
+find knowledge/entries \
+    -maxdepth 1 \
+    -type f \
+    -newer "$RESULT_DIR/.council-start" \
+    -exec cp --parents {} "$RESULT_DIR/condition-c-artifacts/" \;
+find knowledge/entries -maxdepth 1 -type f -printf '%f\n' | sort > "$RESULT_DIR/.knowledge-after"
+
+comm -13 "$RESULT_DIR/.knowledge-before" "$RESULT_DIR/.knowledge-after" | while read -r file
+do
+    rm -f "knowledge/entries/$file"
+done
