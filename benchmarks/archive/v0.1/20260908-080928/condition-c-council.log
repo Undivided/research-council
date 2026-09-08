@@ -1,0 +1,56 @@
+Running Research Council
+Project: benchmark-v0.1
+Model: gemma4:31b-cloud
+
+Processing: researcher
+Prompt size:
+213079 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/researcher-task-001-080951.md
+Processing: historian
+Prompt size:
+213077 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/historian-task-001-081012.md
+Processing: philosopher
+Prompt size:
+213081 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/philosopher-task-001-081039.md
+Processing: strategist
+Prompt size:
+213079 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/strategist-task-001-081053.md
+Processing: skeptic
+Prompt size:
+213073 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/skeptic-task-001-081108.md
+Processing: red-team
+Prompt size:
+213075 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/red-team-task-001-081122.md
+Processing: editor
+Prompt size:
+213071 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/editor-task-001-081136.md
+Processing: archivist
+Prompt size:
+213077 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/archivist-task-001-081152.md
+Knowledge entry:
+/home/sovereign/research-council/knowledge/entries/entry-081207.md
+Processing: librarian
+Prompt size:
+221318 /tmp/council-prompt.txt
+Saved:
+/home/sovereign/research-council/projects/benchmark-v0.1/analysis/librarian-task-001-081207.md
+
+Run record:
+/home/sovereign/research-council/projects/benchmark-v0.1/runs/run-20260908-081224.md
+
+Council run complete.
