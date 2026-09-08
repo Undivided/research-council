@@ -71,6 +71,7 @@ librarian
 )
 
 OUTPUTS=()
+EDITOR_OUTPUT=""
 
 #
 # Run each agent
@@ -85,6 +86,13 @@ do
 
     echo "Processing: $AGENT"
 
+HANDOFF_CONTEXT=""
+if [ "$AGENT" = "editor" ]; then
+    HANDOFF_CONTEXT=$(for OUTPUT in "${OUTPUTS[@]}"; do printf "\n===== %s =====\n" "$(basename "$OUTPUT")"; cat "$OUTPUT"; done)
+fi
+if [ "$AGENT" = "archivist" ] && [ -n "$EDITOR_OUTPUT" ]; then
+    HANDOFF_CONTEXT=$(printf "\n===== EDITOR SYNTHESIS =====\n"; cat "$EDITOR_OUTPUT")
+fi
 CONTEXT=$(~/research-council/scripts/get-context.sh "$QUESTION")
 
 PROMPT="
@@ -138,6 +146,18 @@ Requirements:
 
 Return only the report content.
 "
+
+if [ -n "$HANDOFF_CONTEXT" ]; then
+    PROMPT="$PROMPT
+
+================ CURRENT COUNCIL REPORTS ================
+
+$HANDOFF_CONTEXT
+
+============== END CURRENT COUNCIL REPORTS ==============
+
+Synthesize or preserve this current-run material according to your role. Preserve disagreements, evidence, uncertainty, and unresolved questions."
+fi
 
     echo "$PROMPT" > /tmp/council-prompt.txt
 
@@ -209,6 +229,9 @@ fi
 fi
 
     OUTPUTS+=("$FILE")
+    if [ "$AGENT" = "editor" ]; then
+        EDITOR_OUTPUT="$FILE"
+    fi
 
 done
 
@@ -243,7 +266,7 @@ sed -i "s/{{QUESTION}}/$QUESTION/g" "$RUN_FILE"
         echo "- $(basename "$OUTPUT")"
     done
 
-    FINAL_REPORT="${OUTPUTS[${#OUTPUTS[@]}-1]}"
+    FINAL_REPORT="$EDITOR_OUTPUT"
 
     echo
     echo "Final Report:"
