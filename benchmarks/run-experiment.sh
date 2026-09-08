@@ -29,6 +29,13 @@ echo "Saved: $RESULT_DIR/condition-b-self-critique.md"
 
 echo
 echo "Running Condition C — Research Council v0.1"
+touch "$RESULT_DIR/.council-start"
 ./benchmarks/run-council-v0.1.sh "$QUESTION" > "$RESULT_DIR/condition-c-council.log"
 
 echo "Saved: $RESULT_DIR/condition-c-council.log"
+mkdir -p "$RESULT_DIR/condition-c-artifacts"
+
+find projects/benchmark-v0.1 \
+    -type f \
+    -newer "$RESULT_DIR/.council-start" \
+    -exec cp --parents {} "$RESULT_DIR/condition-c-artifacts/" \;
