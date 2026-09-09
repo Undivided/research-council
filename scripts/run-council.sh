@@ -66,6 +66,7 @@ philosopher
 strategist
 skeptic
 red-team
+fool
 editor
 archivist
 librarian
