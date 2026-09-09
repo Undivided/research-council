@@ -1,0 +1,7 @@
+artifact_id: "fool-task-001-151235"
+agent: "fool"
+environment: "sandbox"
+experiment: "R0.5-001"
+context_mode: "clean"
+epistemic_status: "exploratory"
+report_file: "fool-task-001-151235.md"
