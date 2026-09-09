@@ -30,3 +30,6 @@ The Editor must:
 - preserve uncertainty
 - separate facts from interpretations
 - avoid forcing false consensus
+- preserve provenance for significant source contributions
+- preserve the epistemic status of exploratory or sandboxed material
+- distinguish institutional knowledge from unvalidated exploratory output
