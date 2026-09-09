@@ -13,6 +13,7 @@ fi
 
 BASE="$HOME/research-council/projects/$PROJECT"
 KNOWLEDGE="$HOME/research-council/knowledge"
+ROLE_DIR="$HOME/research-council/config/roles"
 
 if [ ! -d "$BASE" ]; then
     echo "Project does not exist:"
@@ -86,6 +87,12 @@ do
 
     echo "Processing: $AGENT"
 
+    ROLE_CONTEXT=""
+
+    if [ -f "$ROLE_DIR/$AGENT.md" ]; then
+        ROLE_CONTEXT=$(cat "$ROLE_DIR/$AGENT.md")
+    fi
+
 HANDOFF_CONTEXT=""
 if [ "$AGENT" = "editor" ]; then
     HANDOFF_CONTEXT=$(for OUTPUT in "${OUTPUTS[@]}"; do printf "\n===== %s =====\n" "$(basename "$OUTPUT")"; cat "$OUTPUT"; done)
@@ -112,9 +119,15 @@ Do not blindly trust previous conclusions.
 
 Challenge outdated, incomplete, or unsupported information.
 
-Your role is:
+Your cognitive function definition:
 
-$AGENT
+$ROLE_CONTEXT
+
+Apply this function during analysis.
+
+Do not simply imitate a personality.
+
+Act according to the purpose, constraints, and questions defined above.
 
 The following is the ACTUAL CONTENT of the council's accumulated
 knowledge base.
