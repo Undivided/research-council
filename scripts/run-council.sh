@@ -68,6 +68,7 @@ skeptic
 red-team
 fool
 editor
+judge
 archivist
 librarian
 )
