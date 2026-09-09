@@ -13,6 +13,7 @@ fi
 
 BASE="$HOME/research-council/projects/$PROJECT"
 KNOWLEDGE="$HOME/research-council/knowledge"
+ROLE_DIR="$HOME/research-council/config/roles"
 
 if [ ! -d "$BASE" ]; then
     echo "Project does not exist:"
@@ -65,12 +66,16 @@ philosopher
 strategist
 skeptic
 red-team
+fool
 editor
+judge
 archivist
 librarian
 )
 
 OUTPUTS=()
+EDITOR_OUTPUT=""
+JUDGE_OUTPUT=""
 
 #
 # Run each agent
@@ -85,7 +90,39 @@ do
 
     echo "Processing: $AGENT"
 
+    ROLE_CONTEXT=""
+
+    if [ -f "$ROLE_DIR/$AGENT.md" ]; then
+        ROLE_CONTEXT=$(cat "$ROLE_DIR/$AGENT.md")
+    fi
+
+HANDOFF_CONTEXT=""
+if [ "$AGENT" = "editor" ]; then
+    HANDOFF_CONTEXT=$(for OUTPUT in "${OUTPUTS[@]}"; do printf "\n===== %s =====\n" "$(basename "$OUTPUT")"; cat "$OUTPUT"; done)
+fi
+if [ "$AGENT" = "judge" ] && [ -n "$EDITOR_OUTPUT" ]; then
+    HANDOFF_CONTEXT=$(printf "\n===== EDITOR SYNTHESIS =====\n"; cat "$EDITOR_OUTPUT")
+fi
+if [ "$AGENT" = "archivist" ] && [ -n "$EDITOR_OUTPUT" ]; then
+    HANDOFF_CONTEXT=$(
+        printf "\n===== EDITOR SYNTHESIS =====\n"
+        cat "$EDITOR_OUTPUT"
+
+        if [ -n "$JUDGE_OUTPUT" ]; then
+            printf "\n===== JUDGE EVALUATION =====\n"
+            cat "$JUDGE_OUTPUT"
+        fi
+    )
+fi
+
 CONTEXT=$(~/research-council/scripts/get-context.sh "$QUESTION")
+AGENT_KNOWLEDGE_CONTEXT="$KNOWLEDGE_CONTEXT"
+
+if [ "$AGENT" = "fool" ]; then
+    CONTEXT=""
+    AGENT_KNOWLEDGE_CONTEXT=""
+    HANDOFF_CONTEXT=""
+fi
 
 PROMPT="
 You are the $AGENT agent in a research council.
@@ -104,9 +141,15 @@ Do not blindly trust previous conclusions.
 
 Challenge outdated, incomplete, or unsupported information.
 
-Your role is:
+Your cognitive function definition:
 
-$AGENT
+$ROLE_CONTEXT
+
+Apply this function during analysis.
+
+Do not simply imitate a personality.
+
+Act according to the purpose, constraints, and questions defined above.
 
 The following is the ACTUAL CONTENT of the council's accumulated
 knowledge base.
@@ -120,7 +163,7 @@ Do not invent information that is not present.
 
 ================ KNOWLEDGE BASE ================
 
-$KNOWLEDGE_CONTEXT
+$AGENT_KNOWLEDGE_CONTEXT
 
 ============== END KNOWLEDGE BASE ==============
 
@@ -139,6 +182,18 @@ Requirements:
 Return only the report content.
 "
 
+if [ -n "$HANDOFF_CONTEXT" ]; then
+    PROMPT="$PROMPT
+
+================ CURRENT COUNCIL REPORTS ================
+
+$HANDOFF_CONTEXT
+
+============== END CURRENT COUNCIL REPORTS ==============
+
+Synthesize or preserve this current-run material according to your role. Preserve disagreements, evidence, uncertainty, and unresolved questions."
+fi
+
     echo "$PROMPT" > /tmp/council-prompt.txt
 
 echo "Prompt size:"
@@ -146,6 +201,24 @@ wc -c /tmp/council-prompt.txt
 
 echo "$PROMPT" | ollama run "$MODEL" > "$FILE"
 
+if [ "$AGENT" = "fool" ]; then
+    {
+        echo "---"
+        echo "provenance:"
+        echo "  agent: fool"
+        echo "  environment: sandbox"
+        echo "  experiment: R0.4-002"
+        echo "  context_mode: clean"
+        echo ""
+        echo "classification:"
+        echo "  state: exploratory"
+        echo "---"
+        echo ""
+        cat "$FILE"
+    } > "${FILE}.tmp"
+
+    mv "${FILE}.tmp" "$FILE"
+fi
     echo "Saved:"
     echo "$FILE"
 
@@ -210,6 +283,14 @@ fi
 
     OUTPUTS+=("$FILE")
 
+    if [ "$AGENT" = "editor" ]; then
+        EDITOR_OUTPUT="$FILE"
+    fi
+
+    if [ "$AGENT" = "judge" ]; then
+        JUDGE_OUTPUT="$FILE"
+    fi
+
 done
 
 #
@@ -243,7 +324,7 @@ sed -i "s/{{QUESTION}}/$QUESTION/g" "$RUN_FILE"
         echo "- $(basename "$OUTPUT")"
     done
 
-    FINAL_REPORT="${OUTPUTS[${#OUTPUTS[@]}-1]}"
+    FINAL_REPORT="$EDITOR_OUTPUT"
 
     echo
     echo "Final Report:"
