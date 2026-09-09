@@ -116,6 +116,12 @@ if [ "$AGENT" = "archivist" ] && [ -n "$EDITOR_OUTPUT" ]; then
 fi
 CONTEXT=$(~/research-council/scripts/get-context.sh "$QUESTION")
 
+if [ "$AGENT" = "fool" ]; then
+    CONTEXT=""
+    KNOWLEDGE_CONTEXT=""
+    HANDOFF_CONTEXT=""
+fi
+
 PROMPT="
 You are the $AGENT agent in a research council.
 
