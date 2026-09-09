@@ -114,11 +114,13 @@ if [ "$AGENT" = "archivist" ] && [ -n "$EDITOR_OUTPUT" ]; then
         fi
     )
 fi
+
 CONTEXT=$(~/research-council/scripts/get-context.sh "$QUESTION")
+AGENT_KNOWLEDGE_CONTEXT="$KNOWLEDGE_CONTEXT"
 
 if [ "$AGENT" = "fool" ]; then
     CONTEXT=""
-    KNOWLEDGE_CONTEXT=""
+    AGENT_KNOWLEDGE_CONTEXT=""
     HANDOFF_CONTEXT=""
 fi
 
@@ -161,7 +163,7 @@ Do not invent information that is not present.
 
 ================ KNOWLEDGE BASE ================
 
-$KNOWLEDGE_CONTEXT
+$AGENT_KNOWLEDGE_CONTEXT
 
 ============== END KNOWLEDGE BASE ==============
 
@@ -199,6 +201,24 @@ wc -c /tmp/council-prompt.txt
 
 echo "$PROMPT" | ollama run "$MODEL" > "$FILE"
 
+if [ "$AGENT" = "fool" ]; then
+    {
+        echo "---"
+        echo "provenance:"
+        echo "  agent: fool"
+        echo "  environment: sandbox"
+        echo "  experiment: R0.4-002"
+        echo "  context_mode: clean"
+        echo ""
+        echo "classification:"
+        echo "  state: exploratory"
+        echo "---"
+        echo ""
+        cat "$FILE"
+    } > "${FILE}.tmp"
+
+    mv "${FILE}.tmp" "$FILE"
+fi
     echo "Saved:"
     echo "$FILE"
 
