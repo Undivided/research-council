@@ -75,6 +75,7 @@ librarian
 
 OUTPUTS=()
 EDITOR_OUTPUT=""
+JUDGE_OUTPUT=""
 
 #
 # Run each agent
@@ -99,8 +100,19 @@ HANDOFF_CONTEXT=""
 if [ "$AGENT" = "editor" ]; then
     HANDOFF_CONTEXT=$(for OUTPUT in "${OUTPUTS[@]}"; do printf "\n===== %s =====\n" "$(basename "$OUTPUT")"; cat "$OUTPUT"; done)
 fi
-if [ "$AGENT" = "archivist" ] && [ -n "$EDITOR_OUTPUT" ]; then
+if [ "$AGENT" = "judge" ] && [ -n "$EDITOR_OUTPUT" ]; then
     HANDOFF_CONTEXT=$(printf "\n===== EDITOR SYNTHESIS =====\n"; cat "$EDITOR_OUTPUT")
+fi
+if [ "$AGENT" = "archivist" ] && [ -n "$EDITOR_OUTPUT" ]; then
+    HANDOFF_CONTEXT=$(
+        printf "\n===== EDITOR SYNTHESIS =====\n"
+        cat "$EDITOR_OUTPUT"
+
+        if [ -n "$JUDGE_OUTPUT" ]; then
+            printf "\n===== JUDGE EVALUATION =====\n"
+            cat "$JUDGE_OUTPUT"
+        fi
+    )
 fi
 CONTEXT=$(~/research-council/scripts/get-context.sh "$QUESTION")
 
@@ -244,8 +256,13 @@ fi
 fi
 
     OUTPUTS+=("$FILE")
+
     if [ "$AGENT" = "editor" ]; then
         EDITOR_OUTPUT="$FILE"
+    fi
+
+    if [ "$AGENT" = "judge" ]; then
+        JUDGE_OUTPUT="$FILE"
     fi
 
 done
