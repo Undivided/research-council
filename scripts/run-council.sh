@@ -217,22 +217,6 @@ wc -c /tmp/council-prompt.txt
 echo "$PROMPT" | ollama run "$MODEL" > "$FILE"
 
 if [ "$AGENT" = "fool" ]; then
-    {
-        echo "---"
-        echo "provenance:"
-        echo "  agent: fool"
-        echo "  environment: sandbox"
-        echo "  experiment: R0.4-002"
-        echo "  context_mode: clean"
-        echo ""
-        echo "classification:"
-        echo "  state: exploratory"
-        echo "---"
-        echo ""
-        cat "$FILE"
-    } > "${FILE}.tmp"
-
-    mv "${FILE}.tmp" "$FILE"
 
     PROVENANCE_FILE="${FILE%.md}.provenance.yaml"
     ARTIFACT_ID="$(basename "${FILE%.md}")"
@@ -250,12 +234,13 @@ EOF
     echo "Provenance:"
     echo "$PROVENANCE_FILE"
 fi
-    echo "Saved:"
-    echo "$FILE"
 
-    #
-    # Archivist creates persistent knowledge
-    #
+echo "Saved:"
+echo "$FILE"
+
+#
+# Archivist creates persistent knowledge
+#
 
 if [ "$AGENT" = "archivist" ]; then
 
