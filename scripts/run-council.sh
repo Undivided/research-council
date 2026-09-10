@@ -77,6 +77,12 @@ OUTPUTS=()
 EDITOR_OUTPUT=""
 JUDGE_OUTPUT=""
 
+# R0.5-002: minimal system-owned state for the Fool specimen.
+# Epistemic status is assigned by the runtime, not inferred from model prose.
+FOOL_OUTPUT=""
+FOOL_ARTIFACT_ID=""
+FOOL_EPISTEMIC_STATUS="exploratory"
+
 #
 # Run each agent
 #
@@ -109,7 +115,15 @@ if [ "$AGENT" = "editor" ]; then
 fi
 
 if [ "$AGENT" = "judge" ] && [ -n "$EDITOR_OUTPUT" ]; then
-    HANDOFF_CONTEXT=$(printf "\n===== EDITOR SYNTHESIS =====\n"; cat "$EDITOR_OUTPUT")
+    HANDOFF_CONTEXT=$(
+        printf "\n===== EDITOR SYNTHESIS =====\n"
+        cat "$EDITOR_OUTPUT"
+
+        if [ -n "$FOOL_OUTPUT" ]; then
+            printf "\n===== FOOL ARTIFACT FOR DISPOSITION =====\n"
+            cat "$FOOL_OUTPUT"
+        fi
+    )
 fi
 if [ "$AGENT" = "archivist" ] && [ -n "$EDITOR_OUTPUT" ]; then
     HANDOFF_CONTEXT=$(
@@ -202,6 +216,28 @@ $HANDOFF_CONTEXT
 Synthesize or preserve this current-run material according to your role. Preserve disagreements, evidence, uncertainty, and unresolved questions."
 fi
 
+if [ "$AGENT" = "judge" ] && [ -n "$FOOL_OUTPUT" ]; then
+    PROMPT="$PROMPT
+
+R0.5-002 disposition requirement:
+
+Adjudicate what the institution should do with the Fool artifact supplied above.
+
+Choose exactly one disposition:
+
+- accepted_into_memory
+- rejected
+- deferred
+- withheld_from_memory
+
+At the very end of your report, emit exactly one machine-readable line:
+
+FOOL_DISPOSITION: <disposition>
+
+Do not emit or alter artifact_id or epistemic_status.
+Those values are system-owned."
+fi
+
     echo "$PROMPT" > /tmp/council-prompt.txt
 
 echo "Prompt size:"
@@ -219,8 +255,65 @@ if [ ! -s "$FILE" ]; then
     exit 1
 fi
 
+if [ "$AGENT" = "fool" ]; then
+    FOOL_OUTPUT="$FILE"
+    FOOL_ARTIFACT_ID="$PROJECT/analysis/$(basename "$FILE")"
+    FOOL_RECORD_ID="${PROJECT//\//_}-$(basename "${FILE%.md}")"
+fi
+
 echo "Saved:"
 echo "$FILE"
+
+#
+# R0.5-002 durable epistemic disposition
+#
+# The Judge supplies only the institutional adjudication.
+# Artifact identity and epistemic status remain runtime-owned.
+#
+if [ "$AGENT" = "judge" ] && [ -n "$FOOL_OUTPUT" ]; then
+
+    FOOL_DISPOSITION_COUNT=$(
+        grep -Ec '^FOOL_DISPOSITION: (accepted_into_memory|rejected|deferred|withheld_from_memory)$' "$FILE" || true
+    )
+
+    if [ "$FOOL_DISPOSITION_COUNT" -ne 1 ]; then
+        echo "ERROR: Judge must provide exactly one valid Fool disposition" >&2
+        echo "Found: $FOOL_DISPOSITION_COUNT" >&2
+        echo "Expected one of:" >&2
+        echo "  accepted_into_memory" >&2
+        echo "  rejected" >&2
+        echo "  deferred" >&2
+        echo "  withheld_from_memory" >&2
+        exit 1
+    fi
+
+    FOOL_DISPOSITION_DECISION=$(
+        grep -E '^FOOL_DISPOSITION: (accepted_into_memory|rejected|deferred|withheld_from_memory)$' "$FILE" |
+        sed 's/^FOOL_DISPOSITION: //'
+    )
+
+    DISPOSITION_FILE="$KNOWLEDGE/entries/disposition-$FOOL_RECORD_ID.md"
+
+    {
+        echo "---"
+        echo "type: disposition_record"
+        echo "artifact_id: $FOOL_ARTIFACT_ID"
+        echo "epistemic_status: $FOOL_EPISTEMIC_STATUS"
+        echo "disposition: $FOOL_DISPOSITION_DECISION"
+        echo "created: $(date +%Y-%m-%d)"
+        echo "---"
+        echo
+
+        if [ "$FOOL_DISPOSITION_DECISION" = "accepted_into_memory" ]; then
+            echo "## Artifact Snapshot"
+            echo
+            cat "$FOOL_OUTPUT"
+        fi
+    } > "$DISPOSITION_FILE"
+
+    echo "Disposition record:"
+    echo "$DISPOSITION_FILE"
+fi
 
 #
 # Archivist creates persistent knowledge
