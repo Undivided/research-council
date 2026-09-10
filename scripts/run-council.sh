@@ -104,13 +104,6 @@ if [ "$AGENT" = "editor" ]; then
         do
             printf "\n===== %s =====\n" "$(basename "$OUTPUT")"
             cat "$OUTPUT"
-
-            PROVENANCE="${OUTPUT%.md}.provenance.yaml"
-
-            if [ -f "$PROVENANCE" ]; then
-                printf "\n===== %s =====\n" "$(basename "$PROVENANCE")"
-                cat "$PROVENANCE"
-            fi
         done
     )
 fi
@@ -224,25 +217,6 @@ if [ ! -s "$FILE" ]; then
     echo "ERROR: Model invocation produced an empty artifact for $AGENT" >&2
     rm -f "$FILE"
     exit 1
-fi
-
-if [ "$AGENT" = "fool" ]; then
-
-    PROVENANCE_FILE="${FILE%.md}.provenance.yaml"
-    ARTIFACT_ID="$(basename "${FILE%.md}")"
-
-    cat > "$PROVENANCE_FILE" <<EOF
-artifact_id: "$ARTIFACT_ID"
-agent: "$AGENT"
-environment: "sandbox"
-experiment: "R0.5-001"
-context_mode: "clean"
-epistemic_status: "exploratory"
-report_file: "$(basename "$FILE")"
-EOF
-
-    echo "Provenance:"
-    echo "$PROVENANCE_FILE"
 fi
 
 echo "Saved:"
