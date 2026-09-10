@@ -72,3 +72,27 @@ The experiment compares:
 ## Condition A: Isolated Intelligence
 
 A single model receives a task and produces an answer.
+
+---
+
+# Qualitative Cognitive Change
+
+The original hypothesis asks whether the same underlying model performs better when placed within a better cognitive institution.
+
+A stronger form of the hypothesis asks whether architectural change can alter not only performance within an existing conceptual frame, but the kinds of reasoning available to the system.
+
+A quantitative cognitive improvement may produce greater accuracy, consistency, breadth, speed, or reliability while leaving the underlying frame unchanged.
+
+A qualitative cognitive improvement involves a reorganization of the frame itself: detecting a previously hidden assumption, forming a new abstraction, transferring structure across domains, reframing the problem, or making a previously unavailable question or solution class possible.
+
+This produces a further experimental question:
+
+> Can the same underlying model, placed inside different cognitive architectures, exhibit reproducible qualitative changes in reasoning?
+
+Research Council should not assume that such changes occur.
+
+Information topology, differentiated cognitive functions, protected dissent, sandboxing, provenance, memory, synthesis, and adjudication should therefore be treated as experimental variables whose effects can be compared under controlled conditions.
+
+The narrower empirical claim is:
+
+> Architecture may change not only how well a cognitive system reasons, but what kinds of reasoning become available to it.
