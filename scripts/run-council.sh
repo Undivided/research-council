@@ -214,7 +214,17 @@ fi
 echo "Prompt size:"
 wc -c /tmp/council-prompt.txt
 
-echo "$PROMPT" | ollama run "$MODEL" > "$FILE"
+if ! echo "$PROMPT" | ollama run "$MODEL" > "$FILE"; then
+    echo "ERROR: Model invocation failed for $AGENT" >&2
+    rm -f "$FILE"
+    exit 1
+fi
+
+if [ ! -s "$FILE" ]; then
+    echo "ERROR: Model invocation produced an empty artifact for $AGENT" >&2
+    rm -f "$FILE"
+    exit 1
+fi
 
 if [ "$AGENT" = "fool" ]; then
 
