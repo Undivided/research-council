@@ -1,0 +1,7 @@
+Thinking...
+
+<<<COUNCIL_ARTIFACT>>>
+# Researcher Control
+
+VALID_R05004_ARTIFACT
+<<<END_COUNCIL_ARTIFACT>>>

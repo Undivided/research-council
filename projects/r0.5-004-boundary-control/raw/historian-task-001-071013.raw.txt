@@ -1,0 +1,6 @@
+Thinking...
+
+<<<COUNCIL_ARTIFACT>>>
+# Historian Control
+
+This generation intentionally lacks its closing delimiter.

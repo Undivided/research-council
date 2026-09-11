@@ -22,9 +22,48 @@ if [ ! -d "$BASE" ]; then
 fi
 
 mkdir -p "$BASE/runs"
+mkdir -p "$BASE/runs/outcomes"
 mkdir -p "$BASE/analysis"
 mkdir -p "$BASE/raw"
 mkdir -p "$KNOWLEDGE/entries"
+
+# R0.5-004: run identity exists before any agent is attempted.
+RUN_ID=$(date +%Y%m%d-%H%M%S)
+OUTCOME_DIR="$BASE/runs/outcomes"
+
+write_agent_outcome() {
+    local agent="$1"
+    local invocation_status="$2"
+    local artifact_status="$3"
+    local agent_status="$4"
+    local reason="$5"
+    local raw_artifact="$6"
+    local promoted_artifact="$7"
+
+    local outcome_file="$OUTCOME_DIR/$agent-$RUN_ID.yaml"
+
+    {
+        echo "type: agent_outcome"
+        echo "run_id: $RUN_ID"
+        echo "agent: $agent"
+        echo "invocation_status: $invocation_status"
+        echo "artifact_status: $artifact_status"
+        echo "agent_status: $agent_status"
+        echo "reason: $reason"
+
+        if [ -n "$raw_artifact" ]; then
+            echo "raw_artifact: ${raw_artifact#"$HOME/research-council/"}"
+        else
+            echo "raw_artifact: null"
+        fi
+
+        if [ -n "$promoted_artifact" ]; then
+            echo "promoted_artifact: ${promoted_artifact#"$HOME/research-council/"}"
+        else
+            echo "promoted_artifact: null"
+        fi
+    } > "$outcome_file"
+}
 
 echo "Running Research Council"
 echo "Project: $PROJECT"
@@ -279,6 +318,15 @@ if ! echo "$PROMPT" | ollama run "$MODEL" > "$RAW_FILE"; then
     echo "ERROR: Model invocation failed for $AGENT" >&2
     echo "Raw output preserved:" >&2
     echo "$RAW_FILE" >&2
+
+    if [ -s "$RAW_FILE" ]; then
+        OUTCOME_RAW="$RAW_FILE"
+    else
+        OUTCOME_RAW=""
+    fi
+
+    write_agent_outcome         "$AGENT" failed not_created failed model_invocation_failed         "$OUTCOME_RAW" ""
+
     rm -f "$FILE"
     exit 1
 fi
@@ -287,6 +335,9 @@ if [ ! -s "$RAW_FILE" ]; then
     echo "ERROR: Model invocation produced empty raw output for $AGENT" >&2
     echo "Raw output preserved:" >&2
     echo "$RAW_FILE" >&2
+
+    write_agent_outcome         "$AGENT" succeeded rejected_at_boundary failed empty_raw_output         "$RAW_FILE" ""
+
     rm -f "$FILE"
     exit 1
 fi
@@ -305,6 +356,9 @@ if [ "$OPEN_COUNT" -ne 1 ] || [ "$CLOSE_COUNT" -ne 1 ]; then
     echo "Closing markers: $CLOSE_COUNT" >&2
     echo "Raw output preserved:" >&2
     echo "$RAW_FILE" >&2
+
+    write_agent_outcome         "$AGENT" succeeded rejected_at_boundary failed invalid_boundary_count         "$RAW_FILE" ""
+
     rm -f "$FILE"
     exit 1
 fi
@@ -323,6 +377,9 @@ if [ "$OPEN_LINE" -ge "$CLOSE_LINE" ]; then
     echo "ERROR: Artifact markers out of order for $AGENT" >&2
     echo "Raw output preserved:" >&2
     echo "$RAW_FILE" >&2
+
+    write_agent_outcome         "$AGENT" succeeded rejected_at_boundary failed boundary_order_invalid         "$RAW_FILE" ""
+
     rm -f "$FILE"
     exit 1
 fi
@@ -348,11 +405,17 @@ if ! grep -q '[^[:space:]]' "$TMP_FILE"; then
     echo "ERROR: Extracted artifact is empty for $AGENT" >&2
     echo "Raw output preserved:" >&2
     echo "$RAW_FILE" >&2
+
+    write_agent_outcome         "$AGENT" succeeded rejected_at_boundary failed empty_extracted_artifact         "$RAW_FILE" ""
+
     rm -f "$TMP_FILE" "$FILE"
     exit 1
 fi
 
 mv "$TMP_FILE" "$FILE"
+
+AGENT_STATUS="succeeded"
+AGENT_REASON="success"
 
 echo "Raw saved:"
 echo "$RAW_FILE"
@@ -386,6 +449,9 @@ if [ "$AGENT" = "judge" ] && [ -n "$FOOL_OUTPUT" ]; then
         echo "  rejected" >&2
         echo "  deferred" >&2
         echo "  withheld_from_memory" >&2
+
+        write_agent_outcome             "$AGENT" succeeded promoted failed invalid_judge_disposition             "$RAW_FILE" "$FILE"
+
         exit 1
     fi
 
@@ -450,18 +516,27 @@ if grep -q "ARCHIVAL REPORT" "$FILE"; then
     if [ ! -s "$KNOWLEDGE_FILE" ]; then
         echo "ERROR: Knowledge entry is empty"
         rm "$KNOWLEDGE_FILE"
+
+        write_agent_outcome             "$AGENT" succeeded promoted failed archivist_entry_empty             "$RAW_FILE" "$FILE"
+
         exit 1
     fi
 
     if ! grep -q "ARCHIVAL REPORT" "$KNOWLEDGE_FILE"; then
         echo "ERROR: Knowledge entry missing archival report"
         rm "$KNOWLEDGE_FILE"
+
+        write_agent_outcome             "$AGENT" succeeded promoted failed archivist_report_missing             "$RAW_FILE" "$FILE"
+
         exit 1
     fi
 
     if [ "$(wc -c < "$KNOWLEDGE_FILE")" -lt 1000 ]; then
         echo "ERROR: Knowledge entry suspiciously small"
         rm "$KNOWLEDGE_FILE"
+
+        write_agent_outcome             "$AGENT" succeeded promoted failed archivist_entry_too_small             "$RAW_FILE" "$FILE"
+
         exit 1
     fi
 else
@@ -469,12 +544,17 @@ else
     rm "$KNOWLEDGE_FILE"
     echo "Archivist failed validation. No knowledge entry created."
 
+    AGENT_STATUS="failed"
+    AGENT_REASON="archivist_report_missing"
+
 fi
 
     echo "Knowledge entry:"
     echo "$KNOWLEDGE_FILE"
 
 fi
+
+    write_agent_outcome         "$AGENT" succeeded promoted "$AGENT_STATUS" "$AGENT_REASON"         "$RAW_FILE" "$FILE"
 
     OUTPUTS+=("$FILE")
 
@@ -491,8 +571,6 @@ done
 #
 # Create research run record
 #
-RUN_ID=$(date +%Y%m%d-%H%M%S)
-
 RUN_FILE="$BASE/runs/run-$RUN_ID.md"
 
 cp "$HOME/research-council/templates/run-template.md" "$RUN_FILE"

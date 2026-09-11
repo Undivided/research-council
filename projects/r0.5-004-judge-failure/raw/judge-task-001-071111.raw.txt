@@ -1,0 +1,7 @@
+<<<COUNCIL_ARTIFACT>>>
+# Judge Control
+
+This is a valid promoted cognitive artifact.
+
+It intentionally omits the required FOOL_DISPOSITION machine-readable line.
+<<<END_COUNCIL_ARTIFACT>>>

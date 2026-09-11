@@ -1,0 +1,9 @@
+type: agent_outcome
+run_id: 20260911-071041
+agent: researcher
+invocation_status: failed
+artifact_status: not_created
+agent_status: failed
+reason: model_invocation_failed
+raw_artifact: null
+promoted_artifact: null
