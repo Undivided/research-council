@@ -1,0 +1,5 @@
+<<<COUNCIL_ARTIFACT>>>
+# red-team Control
+
+Deterministic successful artifact for red-team.
+<<<END_COUNCIL_ARTIFACT>>>

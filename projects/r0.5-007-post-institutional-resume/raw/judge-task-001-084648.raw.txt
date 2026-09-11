@@ -1,0 +1,7 @@
+<<<COUNCIL_ARTIFACT>>>
+# Judge Control
+
+Deterministic Judge artifact for post-institutional resumption.
+
+FOOL_DISPOSITION: accepted_into_memory
+<<<END_COUNCIL_ARTIFACT>>>

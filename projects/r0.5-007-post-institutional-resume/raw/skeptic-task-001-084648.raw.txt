@@ -1,0 +1,5 @@
+<<<COUNCIL_ARTIFACT>>>
+# skeptic Control
+
+Deterministic successful artifact for skeptic.
+<<<END_COUNCIL_ARTIFACT>>>

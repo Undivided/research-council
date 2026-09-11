@@ -1,14 +1,31 @@
 #!/bin/bash
 
 
-PROJECT=$1
-QUESTION=$2
 MODEL="gemma4:31b-cloud"
+RUN_MODE="new"
+RESUME_RUN_ID=""
+QUESTION=""
 
-if [ -z "$PROJECT" ] || [ -z "$QUESTION" ]; then
-    echo "Usage:"
-    echo "./scripts/run-council.sh project-name \"research question\""
-    exit 1
+if [ "$1" = "--resume" ]; then
+    RUN_MODE="resume"
+    PROJECT="$2"
+    RESUME_RUN_ID="$3"
+
+    if [ -z "$PROJECT" ] || [ -z "$RESUME_RUN_ID" ]; then
+        echo "Usage:"
+        echo "./scripts/run-council.sh --resume project-name run-id"
+        exit 1
+    fi
+else
+    PROJECT="$1"
+    QUESTION="$2"
+
+    if [ -z "$PROJECT" ] || [ -z "$QUESTION" ]; then
+        echo "Usage:"
+        echo "./scripts/run-council.sh project-name \"research question\""
+        echo "./scripts/run-council.sh --resume project-name run-id"
+        exit 1
+    fi
 fi
 
 BASE="$HOME/research-council/projects/$PROJECT"
@@ -27,9 +44,18 @@ mkdir -p "$BASE/analysis"
 mkdir -p "$BASE/raw"
 mkdir -p "$KNOWLEDGE/entries"
 
-# R0.5-004: run identity exists before any agent is attempted.
-RUN_ID=$(date +%Y%m%d-%H%M%S)
+# R0.5-004 / R0.5-007: new runs create identity; resumed runs reuse it.
+if [ "$RUN_MODE" = "resume" ]; then
+    RUN_ID="$RESUME_RUN_ID"
+else
+    RUN_ID=$(date +%Y%m%d-%H%M%S)
+fi
+
 OUTCOME_DIR="$BASE/runs/outcomes"
+
+# R0.5-007: minimal durable execution inputs required for safe resumption.
+RUN_QUESTION_FILE="$BASE/runs/question-$RUN_ID.txt"
+RUN_MODEL_FILE="$BASE/runs/model-$RUN_ID.txt"
 
 write_agent_outcome() {
     local agent="$1"
@@ -67,6 +93,52 @@ write_agent_outcome() {
 
 # R0.5-005: durable whole-run state.
 RUN_STATE_FILE="$BASE/runs/state-$RUN_ID.yaml"
+
+if [ "$RUN_MODE" = "resume" ]; then
+    if [ ! -f "$RUN_STATE_FILE" ]; then
+        echo "ERROR: Resume state does not exist:" >&2
+        echo "$RUN_STATE_FILE" >&2
+        exit 1
+    fi
+
+    if [ ! -s "$RUN_QUESTION_FILE" ] || [ ! -s "$RUN_MODEL_FILE" ]; then
+        echo "ERROR: Run predates resumable input snapshots or they are missing." >&2
+        echo "Question: $RUN_QUESTION_FILE" >&2
+        echo "Model:    $RUN_MODEL_FILE" >&2
+        exit 1
+    fi
+
+    STATE_RUN_ID=$(sed -n 's/^run_id: //p' "$RUN_STATE_FILE")
+    STATE_PROJECT=$(sed -n 's/^project: //p' "$RUN_STATE_FILE")
+    STATE_STATUS=$(sed -n 's/^run_status: //p' "$RUN_STATE_FILE")
+
+    if [ "$STATE_RUN_ID" != "$RUN_ID" ]; then
+        echo "ERROR: Resume run_id does not match durable state." >&2
+        exit 1
+    fi
+
+    if [ "$STATE_PROJECT" != "$PROJECT" ]; then
+        echo "ERROR: Resume project does not match durable state." >&2
+        exit 1
+    fi
+
+    if [ "$STATE_STATUS" != "interrupted" ]; then
+        echo "ERROR: Only interrupted runs may be resumed." >&2
+        echo "Current run_status: $STATE_STATUS" >&2
+        exit 1
+    fi
+
+    if [ -e "$BASE/runs/run-$RUN_ID.md" ]; then
+        echo "ERROR: Final run record already exists; refusing resume." >&2
+        exit 1
+    fi
+
+    QUESTION=$(cat "$RUN_QUESTION_FILE")
+    MODEL=$(cat "$RUN_MODEL_FILE")
+else
+    printf '%s' "$QUESTION" > "$RUN_QUESTION_FILE"
+    printf '%s\n' "$MODEL" > "$RUN_MODEL_FILE"
+fi
 
 write_run_state() {
     local tmp_file="${RUN_STATE_FILE}.tmp"
@@ -157,18 +229,36 @@ echo "Model: $MODEL"
 echo
 
 #
-# Build knowledge context
+# Build or restore immutable run-start knowledge context
 #
 
-KNOWLEDGE_CONTEXT=""
+# R0.5-007: resumption must preserve the original epistemic starting point.
+# Both the full knowledge-base context and get-context.sh retrieval output are
+# snapshotted once for a new run and reused verbatim as run inputs on resume.
+RUN_KNOWLEDGE_CONTEXT_FILE="$BASE/runs/knowledge-context-$RUN_ID.txt"
+RUN_RETRIEVAL_CONTEXT_FILE="$BASE/runs/retrieval-context-$RUN_ID.txt"
 
-if [ -d "$KNOWLEDGE/entries" ]; then
+if [ "$RUN_MODE" = "resume" ]; then
 
-    for KNOWLEDGE_FILE in "$KNOWLEDGE"/entries/*.md
-    do
-        if [ -f "$KNOWLEDGE_FILE" ]; then
+    if [ ! -f "$RUN_KNOWLEDGE_CONTEXT_FILE" ] ||
+       [ ! -f "$RUN_RETRIEVAL_CONTEXT_FILE" ]; then
+        echo "ERROR: Run predates resumable context snapshots or they are missing." >&2
+        echo "Knowledge context:  $RUN_KNOWLEDGE_CONTEXT_FILE" >&2
+        echo "Retrieval context:  $RUN_RETRIEVAL_CONTEXT_FILE" >&2
+        exit 1
+    fi
 
-            KNOWLEDGE_CONTEXT+="
+else
+
+    KNOWLEDGE_CONTEXT=""
+
+    if [ -d "$KNOWLEDGE/entries" ]; then
+
+        for KNOWLEDGE_FILE in "$KNOWLEDGE"/entries/*.md
+        do
+            if [ -f "$KNOWLEDGE_FILE" ]; then
+
+                KNOWLEDGE_CONTEXT+="
 --- BEGIN KNOWLEDGE: $(basename "$KNOWLEDGE_FILE") ---
 
 $(cat "$KNOWLEDGE_FILE")
@@ -176,10 +266,28 @@ $(cat "$KNOWLEDGE_FILE")
 --- END KNOWLEDGE: $(basename "$KNOWLEDGE_FILE") ---
 "
 
-        fi
-    done
+            fi
+        done
 
+    fi
+
+    printf '%s' "$KNOWLEDGE_CONTEXT" > "$RUN_KNOWLEDGE_CONTEXT_FILE"
+
+    RETRIEVAL_TMP="${RUN_RETRIEVAL_CONTEXT_FILE}.tmp"
+
+    if ! "$HOME/research-council/scripts/get-context.sh" "$QUESTION" > "$RETRIEVAL_TMP"; then
+        echo "ERROR: Failed to build run-start retrieval context." >&2
+        rm -f "$RETRIEVAL_TMP"
+        exit 1
+    fi
+
+    mv "$RETRIEVAL_TMP" "$RUN_RETRIEVAL_CONTEXT_FILE"
 fi
+
+# Load both new and resumed runs from their durable snapshots so both paths use
+# identical runtime semantics.
+KNOWLEDGE_CONTEXT=$(cat "$RUN_KNOWLEDGE_CONTEXT_FILE")
+RUN_RETRIEVAL_CONTEXT=$(cat "$RUN_RETRIEVAL_CONTEXT_FILE")
 
 #
 # Council agents
@@ -199,6 +307,26 @@ archivist
 librarian
 )
 
+# R0.5-007: agent position defines attempted_agents semantics.
+RUN_AGENTS_FILE="$BASE/runs/agents-$RUN_ID.txt"
+
+if [ "$RUN_MODE" = "resume" ]; then
+    if [ ! -s "$RUN_AGENTS_FILE" ]; then
+        echo "ERROR: Saved Council roster is missing." >&2
+        exit 1
+    fi
+
+    CURRENT_ROSTER=$(printf '%s\n' "${AGENTS[@]}")
+    SAVED_ROSTER=$(cat "$RUN_AGENTS_FILE")
+
+    if [ "$CURRENT_ROSTER" != "$SAVED_ROSTER" ]; then
+        echo "ERROR: Council roster changed; refusing unsafe resume." >&2
+        exit 1
+    fi
+else
+    printf '%s\n' "${AGENTS[@]}" > "$RUN_AGENTS_FILE"
+fi
+
 OUTPUTS=()
 EDITOR_OUTPUT=""
 JUDGE_OUTPUT=""
@@ -209,17 +337,132 @@ FOOL_OUTPUT=""
 FOOL_ARTIFACT_ID=""
 FOOL_EPISTEMIC_STATUS="exploratory"
 
+# R0.5-007: restore already-completed artifacts into the current process
+# without invoking those agents again.
+register_resumed_output() {
+    local agent="$1"
+    local outcome_file="$OUTCOME_DIR/$agent-$RUN_ID.yaml"
+    local promoted_rel
+    local promoted_file
+
+    if [ ! -f "$outcome_file" ]; then
+        return 1
+    fi
+
+    if ! grep -Fqx "run_id: $RUN_ID" "$outcome_file" ||
+       ! grep -Fqx "agent: $agent" "$outcome_file" ||
+       ! grep -Fqx "invocation_status: succeeded" "$outcome_file" ||
+       ! grep -Fqx "artifact_status: promoted" "$outcome_file" ||
+       ! grep -Fqx "agent_status: succeeded" "$outcome_file"; then
+        echo "ERROR: Existing outcome is not a resumable successful outcome:" >&2
+        echo "$outcome_file" >&2
+        exit 1
+    fi
+
+    promoted_rel=$(sed -n 's/^promoted_artifact: //p' "$outcome_file")
+
+    if [ -z "$promoted_rel" ] || [ "$promoted_rel" = "null" ]; then
+        echo "ERROR: Successful outcome has no promoted artifact." >&2
+        exit 1
+    fi
+
+    promoted_file="$HOME/research-council/$promoted_rel"
+
+    if [ ! -s "$promoted_file" ]; then
+        echo "ERROR: Promoted artifact required for resume is missing:" >&2
+        echo "$promoted_file" >&2
+        exit 1
+    fi
+
+    OUTPUTS+=("$promoted_file")
+
+    if [ "$agent" = "fool" ]; then
+        FOOL_OUTPUT="$promoted_file"
+        FOOL_ARTIFACT_ID="$PROJECT/analysis/$(basename "$promoted_file")"
+        FOOL_RECORD_ID="${PROJECT//\//_}-$(basename "${promoted_file%.md}")"
+    fi
+
+    if [ "$agent" = "editor" ]; then
+        EDITOR_OUTPUT="$promoted_file"
+    fi
+
+    if [ "$agent" = "judge" ]; then
+        JUDGE_OUTPUT="$promoted_file"
+    fi
+
+    echo "Resume: skipping completed agent: $agent"
+    return 0
+}
+
 #
 # Run each agent
 #
 
 TOTAL_AGENTS="${#AGENTS[@]}"
-ATTEMPTED_AGENTS=0
-COMPLETED_AGENTS=0
 NONFATAL_AGENT_FAILURE=0
 
+if [ "$RUN_MODE" = "resume" ]; then
+    ATTEMPTED_AGENTS=$(sed -n 's/^attempted_agents: //p' "$RUN_STATE_FILE")
+    STATE_COMPLETED_AGENTS=$(sed -n 's/^completed_agents: //p' "$RUN_STATE_FILE")
+    STATE_TOTAL_AGENTS=$(sed -n 's/^total_agents: //p' "$RUN_STATE_FILE")
+
+    if ! [[ "$ATTEMPTED_AGENTS" =~ ^[0-9]+$ ]] ||
+       ! [[ "$STATE_COMPLETED_AGENTS" =~ ^[0-9]+$ ]] ||
+       ! [[ "$STATE_TOTAL_AGENTS" =~ ^[0-9]+$ ]]; then
+        echo "ERROR: Invalid numeric run-state counters." >&2
+        exit 1
+    fi
+
+    if [ "$STATE_TOTAL_AGENTS" -ne "$TOTAL_AGENTS" ]; then
+        echo "ERROR: Saved total_agents does not match current Council." >&2
+        exit 1
+    fi
+
+    COMPLETED_AGENTS=0
+    SEEN_OUTCOME_GAP=0
+
+    for EXISTING_AGENT in "${AGENTS[@]}"
+    do
+        EXISTING_OUTCOME="$OUTCOME_DIR/$EXISTING_AGENT-$RUN_ID.yaml"
+
+        if [ -f "$EXISTING_OUTCOME" ]; then
+            if [ "$SEEN_OUTCOME_GAP" -eq 1 ]; then
+                echo "ERROR: Successful outcomes are not a contiguous prefix." >&2
+                exit 1
+            fi
+
+            if ! grep -Fqx "agent_status: succeeded" "$EXISTING_OUTCOME" ||
+               ! grep -Fqx "artifact_status: promoted" "$EXISTING_OUTCOME"; then
+                echo "ERROR: Initial R0.5-007 resume does not replay or skip prior failed outcomes." >&2
+                echo "$EXISTING_OUTCOME" >&2
+                exit 1
+            fi
+
+            COMPLETED_AGENTS=$((COMPLETED_AGENTS + 1))
+        else
+            SEEN_OUTCOME_GAP=1
+        fi
+    done
+
+    if [ "$COMPLETED_AGENTS" -ne "$STATE_COMPLETED_AGENTS" ]; then
+        echo "ERROR: Run state and successful outcome count disagree." >&2
+        exit 1
+    fi
+
+    if [ "$ATTEMPTED_AGENTS" -lt "$COMPLETED_AGENTS" ] ||
+       [ "$ATTEMPTED_AGENTS" -gt "$TOTAL_AGENTS" ]; then
+        echo "ERROR: Incoherent attempted/completed counters." >&2
+        exit 1
+    fi
+
+    RUN_REASON="resumed_execution"
+else
+    ATTEMPTED_AGENTS=0
+    COMPLETED_AGENTS=0
+    RUN_REASON="in_progress"
+fi
+
 RUN_STATUS="running"
-RUN_REASON="in_progress"
 CURRENT_AGENT=""
 FAILED_AGENT=""
 
@@ -231,11 +474,26 @@ trap 'handle_run_interruption INT' INT
 trap 'handle_run_interruption TERM' TERM
 trap 'handle_run_interruption HUP' HUP
 
+AGENT_POSITION=0
+
 for AGENT in "${AGENTS[@]}"
 do
+    AGENT_POSITION=$((AGENT_POSITION + 1))
+
+    if [ "$RUN_MODE" = "resume" ]; then
+        if register_resumed_output "$AGENT"; then
+            continue
+        fi
+    fi
 
     CURRENT_AGENT="$AGENT"
-    ATTEMPTED_AGENTS=$((ATTEMPTED_AGENTS + 1))
+
+    # attempted_agents means furthest Council position entered, not number
+    # of process invocations. Retrying the interrupted agent does not add one.
+    if [ "$AGENT_POSITION" -gt "$ATTEMPTED_AGENTS" ]; then
+        ATTEMPTED_AGENTS="$AGENT_POSITION"
+    fi
+
     write_run_state
 
     TIMESTAMP=$(date +%H%M%S)
@@ -285,7 +543,9 @@ if [ "$AGENT" = "archivist" ] && [ -n "$EDITOR_OUTPUT" ]; then
     )
 fi
 
-CONTEXT=$(~/research-council/scripts/get-context.sh "$QUESTION")
+# R0.5-007: every agent in this logical run uses the original run-start
+# retrieval snapshot, including agents executed after a process restart.
+CONTEXT="$RUN_RETRIEVAL_CONTEXT"
 AGENT_KNOWLEDGE_CONTEXT="$KNOWLEDGE_CONTEXT"
 
 if [ "$AGENT" = "fool" ]; then
