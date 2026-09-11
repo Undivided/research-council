@@ -109,6 +109,48 @@ mark_run_failed() {
     write_run_state
 }
 
+# R0.5-006: catchable process interruption.
+#
+# This updates whole-run state only. It deliberately does not manufacture
+# an R0.5-004 agent outcome for work that did not complete through normal
+# runtime control flow.
+handle_run_interruption() {
+    local signal="$1"
+    local exit_code
+
+    case "$signal" in
+        INT)
+            exit_code=130
+            ;;
+        TERM)
+            exit_code=143
+            ;;
+        HUP)
+            exit_code=129
+            ;;
+        *)
+            exit_code=1
+            ;;
+    esac
+
+    # Prevent recursive signal handling while persisting terminal state.
+    trap - INT TERM HUP
+
+    if [ "$RUN_STATUS" = "running" ]; then
+        RUN_STATUS="interrupted"
+        RUN_REASON="process_interrupted"
+        FAILED_AGENT=""
+
+        write_run_state
+
+        echo "Council run interrupted by $signal" >&2
+        echo "Run state:" >&2
+        echo "$RUN_STATE_FILE" >&2
+    fi
+
+    exit "$exit_code"
+}
+
 echo "Running Research Council"
 echo "Project: $PROJECT"
 echo "Model: $MODEL"
@@ -183,6 +225,11 @@ FAILED_AGENT=""
 
 # The run exists durably before the first model invocation.
 write_run_state
+
+# R0.5-006: signals are handled only after durable run state exists.
+trap 'handle_run_interruption INT' INT
+trap 'handle_run_interruption TERM' TERM
+trap 'handle_run_interruption HUP' HUP
 
 for AGENT in "${AGENTS[@]}"
 do
@@ -670,6 +717,9 @@ else
 fi
 
 write_run_state
+
+# Normal Council execution has reached a durable terminal state.
+trap - INT TERM HUP
 
 #
 # Create research run record

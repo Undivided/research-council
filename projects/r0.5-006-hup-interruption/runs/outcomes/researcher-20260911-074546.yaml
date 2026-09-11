@@ -1,0 +1,9 @@
+type: agent_outcome
+run_id: 20260911-074546
+agent: researcher
+invocation_status: succeeded
+artifact_status: promoted
+agent_status: succeeded
+reason: success
+raw_artifact: projects/r0.5-006-hup-interruption/raw/researcher-task-001-074546.raw.txt
+promoted_artifact: projects/r0.5-006-hup-interruption/analysis/researcher-task-001-074546.md

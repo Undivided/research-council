@@ -1,0 +1,5 @@
+<<<COUNCIL_ARTIFACT>>>
+# Researcher Control
+
+Researcher completes normally before the interruption.
+<<<END_COUNCIL_ARTIFACT>>>
