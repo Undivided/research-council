@@ -66,10 +66,18 @@ A compact working method:
 - **Do not confuse fluency with understanding.**
 - **Do not confuse agreement with truth.**
 - **Do not confuse complexity with depth.**
+- **AI should accelerate disciplined intelligence, not bypass it.**
+- **Faster answers are not the same thing as faster understanding.**
+- **Speed amplifies the quality of the process it is attached to.**
+- **Increase the speed of understanding without sacrificing the mechanisms that create understanding.**
 
 Working higher-order statement:
 
 > **We are not trying to manufacture intelligence directly. We are trying to build the conditions in which better intelligence can emerge, correct itself, remember, and become something larger than its parts.**
+
+A second working statement:
+
+> **The system is not valuable because it answers quickly. It is valuable if it can participate in a process that produces increasingly reliable understanding—and do so at machine speed without discarding provenance, disagreement, memory, uncertainty, challenge, or contact with reality.**
 
 ---
 
@@ -84,6 +92,8 @@ Working higher-order statement:
 - **Recursion becomes meaningful when the next loop is changed by the previous one.**
 - **The environment is not merely background; it can be part of the cognitive system.**
 - **Relationships may carry as much meaning as the objects being related.**
+- **A powerful system should be designed not only for what it can accomplish, but for how it can discover when it is wrong.**
+- **The first duty of a learning system is not to be correct. It is to remain capable of becoming more correct.**
 
 ---
 
@@ -122,6 +132,7 @@ Working higher-order statement:
 - **The Philosopher asks what it means.**
 - **Turtle Power builds it anyway.**
 - **The player should be allowed to laugh at the turtle joke before discovering that the turtle joke is structurally true.**
+- **The shell protects the journey, not a fixed destination.**
 - **WARG.**
 - **TURTLE POWER.**
 
@@ -148,6 +159,10 @@ When a principle appears across multiple substrates—Council runs, human reason
 Do not protect a statement because it sounds good.
 
 Protect the process that allows good statements to survive and bad ones to die.
+
+Do not require change for its own sake.
+
+Preserve the system's ability to recognize when change is warranted and to integrate that change without destroying the memory and correction mechanisms that made learning possible.
 
 ---
 
