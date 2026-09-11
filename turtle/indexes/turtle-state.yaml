@@ -1,0 +1,32 @@
+turtle:
+  name: Turtle Intelligence Architecture
+
+  version:
+    current: v1.1
+    next_commit: 119
+
+  completed:
+    foundation:
+      start: 100
+      end: 109
+      status: complete
+
+    expansion:
+      start: 110
+      end: 118
+      status: active
+
+  repository:
+    name: research-council
+    branch: v0.5-first-class-provenance
+    path: turtle/
+
+  provenance:
+    tracked: true
+    git_controlled: true
+
+  archive:
+    commits:
+      stored: true
+    reviews:
+      stored: true
