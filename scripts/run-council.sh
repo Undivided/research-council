@@ -672,6 +672,34 @@ FOOL_DISPOSITION: <disposition>
 
 Make it the final report line immediately before the artifact closing marker.
 
+The disposition line is machine-readable runtime syntax.
+
+Emit it as literal plain text with no Markdown formatting or decoration.
+
+It must be exactly one of:
+
+FOOL_DISPOSITION: accepted_into_memory
+FOOL_DISPOSITION: rejected
+FOOL_DISPOSITION: deferred
+FOOL_DISPOSITION: withheld_from_memory
+
+Do NOT surround the line with:
+- bold markers
+- italics
+- backticks
+- bullets
+- headings
+- quotes
+- any leading or trailing characters
+
+For example, this is INVALID:
+
+**FOOL_DISPOSITION: accepted_into_memory**
+
+This is VALID:
+
+FOOL_DISPOSITION: accepted_into_memory
+
 Do not emit or alter artifact_id or epistemic_status.
 Those values are system-owned."
 fi
