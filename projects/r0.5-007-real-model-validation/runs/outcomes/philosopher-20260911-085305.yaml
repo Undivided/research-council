@@ -1,0 +1,9 @@
+type: agent_outcome
+run_id: 20260911-085305
+agent: philosopher
+invocation_status: succeeded
+artifact_status: promoted
+agent_status: succeeded
+reason: success
+raw_artifact: projects/r0.5-007-real-model-validation/raw/philosopher-task-001-085349.raw.txt
+promoted_artifact: projects/r0.5-007-real-model-validation/analysis/philosopher-task-001-085349.md

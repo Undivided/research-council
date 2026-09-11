@@ -1,0 +1,1 @@
+Evaluate whether safe-run resumption infrastructure preserves normal Council execution, stable run inputs, artifact boundaries, per-agent outcomes, whole-run state, and institutional disposition.
