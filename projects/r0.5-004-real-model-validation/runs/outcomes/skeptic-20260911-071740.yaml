@@ -1,0 +1,9 @@
+type: agent_outcome
+run_id: 20260911-071740
+agent: skeptic
+invocation_status: succeeded
+artifact_status: promoted
+agent_status: succeeded
+reason: success
+raw_artifact: projects/r0.5-004-real-model-validation/raw/skeptic-task-001-071906.raw.txt
+promoted_artifact: projects/r0.5-004-real-model-validation/analysis/skeptic-task-001-071906.md
