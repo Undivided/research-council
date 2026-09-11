@@ -1,0 +1,7 @@
+<<<COUNCIL_ARTIFACT>>>
+# Judge Control
+
+Valid Judge artifact for R0.5-005.
+
+FOOL_DISPOSITION: accepted_into_memory
+<<<END_COUNCIL_ARTIFACT>>>

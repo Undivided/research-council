@@ -1,0 +1,9 @@
+type: agent_outcome
+run_id: 20260911-072908
+agent: historian
+invocation_status: succeeded
+artifact_status: rejected_at_boundary
+agent_status: failed
+reason: invalid_boundary_count
+raw_artifact: projects/r0.5-005-boundary-failure/raw/historian-task-001-072908.raw.txt
+promoted_artifact: null

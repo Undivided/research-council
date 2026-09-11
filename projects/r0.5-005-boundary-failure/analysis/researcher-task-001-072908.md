@@ -1,0 +1,3 @@
+# Researcher
+
+Valid artifact.

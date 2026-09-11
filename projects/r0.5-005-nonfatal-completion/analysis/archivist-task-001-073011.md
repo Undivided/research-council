@@ -1,0 +1,6 @@
+# Archivist Control
+
+This artifact is structurally valid and therefore promoted.
+
+It intentionally omits the required archival report marker so the Archivist
+agent operation fails nonfatally after promotion.

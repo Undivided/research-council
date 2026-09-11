@@ -65,6 +65,50 @@ write_agent_outcome() {
     } > "$outcome_file"
 }
 
+# R0.5-005: durable whole-run state.
+RUN_STATE_FILE="$BASE/runs/state-$RUN_ID.yaml"
+
+write_run_state() {
+    local tmp_file="${RUN_STATE_FILE}.tmp"
+
+    {
+        echo "type: council_run_state"
+        echo "run_id: $RUN_ID"
+        echo "project: $PROJECT"
+        echo "run_status: $RUN_STATUS"
+        echo "reason: $RUN_REASON"
+
+        if [ -n "$CURRENT_AGENT" ]; then
+            echo "current_agent: $CURRENT_AGENT"
+        else
+            echo "current_agent: null"
+        fi
+
+        if [ -n "$FAILED_AGENT" ]; then
+            echo "failed_agent: $FAILED_AGENT"
+        else
+            echo "failed_agent: null"
+        fi
+
+        echo "attempted_agents: $ATTEMPTED_AGENTS"
+        echo "completed_agents: $COMPLETED_AGENTS"
+        echo "total_agents: $TOTAL_AGENTS"
+    } > "$tmp_file"
+
+    mv "$tmp_file" "$RUN_STATE_FILE"
+}
+
+mark_run_failed() {
+    local agent="$1"
+
+    RUN_STATUS="failed"
+    RUN_REASON="agent_failure"
+    CURRENT_AGENT="$agent"
+    FAILED_AGENT="$agent"
+
+    write_run_state
+}
+
 echo "Running Research Council"
 echo "Project: $PROJECT"
 echo "Model: $MODEL"
@@ -127,8 +171,25 @@ FOOL_EPISTEMIC_STATUS="exploratory"
 # Run each agent
 #
 
+TOTAL_AGENTS="${#AGENTS[@]}"
+ATTEMPTED_AGENTS=0
+COMPLETED_AGENTS=0
+NONFATAL_AGENT_FAILURE=0
+
+RUN_STATUS="running"
+RUN_REASON="in_progress"
+CURRENT_AGENT=""
+FAILED_AGENT=""
+
+# The run exists durably before the first model invocation.
+write_run_state
+
 for AGENT in "${AGENTS[@]}"
 do
+
+    CURRENT_AGENT="$AGENT"
+    ATTEMPTED_AGENTS=$((ATTEMPTED_AGENTS + 1))
+    write_run_state
 
     TIMESTAMP=$(date +%H%M%S)
 
@@ -328,6 +389,8 @@ if ! echo "$PROMPT" | ollama run "$MODEL" > "$RAW_FILE"; then
     write_agent_outcome         "$AGENT" failed not_created failed model_invocation_failed         "$OUTCOME_RAW" ""
 
     rm -f "$FILE"
+    mark_run_failed "$AGENT"
+
     exit 1
 fi
 
@@ -339,6 +402,8 @@ if [ ! -s "$RAW_FILE" ]; then
     write_agent_outcome         "$AGENT" succeeded rejected_at_boundary failed empty_raw_output         "$RAW_FILE" ""
 
     rm -f "$FILE"
+    mark_run_failed "$AGENT"
+
     exit 1
 fi
 
@@ -360,6 +425,8 @@ if [ "$OPEN_COUNT" -ne 1 ] || [ "$CLOSE_COUNT" -ne 1 ]; then
     write_agent_outcome         "$AGENT" succeeded rejected_at_boundary failed invalid_boundary_count         "$RAW_FILE" ""
 
     rm -f "$FILE"
+    mark_run_failed "$AGENT"
+
     exit 1
 fi
 
@@ -381,6 +448,8 @@ if [ "$OPEN_LINE" -ge "$CLOSE_LINE" ]; then
     write_agent_outcome         "$AGENT" succeeded rejected_at_boundary failed boundary_order_invalid         "$RAW_FILE" ""
 
     rm -f "$FILE"
+    mark_run_failed "$AGENT"
+
     exit 1
 fi
 
@@ -409,6 +478,8 @@ if ! grep -q '[^[:space:]]' "$TMP_FILE"; then
     write_agent_outcome         "$AGENT" succeeded rejected_at_boundary failed empty_extracted_artifact         "$RAW_FILE" ""
 
     rm -f "$TMP_FILE" "$FILE"
+    mark_run_failed "$AGENT"
+
     exit 1
 fi
 
@@ -451,6 +522,8 @@ if [ "$AGENT" = "judge" ] && [ -n "$FOOL_OUTPUT" ]; then
         echo "  withheld_from_memory" >&2
 
         write_agent_outcome             "$AGENT" succeeded promoted failed invalid_judge_disposition             "$RAW_FILE" "$FILE"
+
+        mark_run_failed "$AGENT"
 
         exit 1
     fi
@@ -519,6 +592,8 @@ if grep -q "ARCHIVAL REPORT" "$FILE"; then
 
         write_agent_outcome             "$AGENT" succeeded promoted failed archivist_entry_empty             "$RAW_FILE" "$FILE"
 
+        mark_run_failed "$AGENT"
+
         exit 1
     fi
 
@@ -528,6 +603,8 @@ if grep -q "ARCHIVAL REPORT" "$FILE"; then
 
         write_agent_outcome             "$AGENT" succeeded promoted failed archivist_report_missing             "$RAW_FILE" "$FILE"
 
+        mark_run_failed "$AGENT"
+
         exit 1
     fi
 
@@ -536,6 +613,8 @@ if grep -q "ARCHIVAL REPORT" "$FILE"; then
         rm "$KNOWLEDGE_FILE"
 
         write_agent_outcome             "$AGENT" succeeded promoted failed archivist_entry_too_small             "$RAW_FILE" "$FILE"
+
+        mark_run_failed "$AGENT"
 
         exit 1
     fi
@@ -556,6 +635,15 @@ fi
 
     write_agent_outcome         "$AGENT" succeeded promoted "$AGENT_STATUS" "$AGENT_REASON"         "$RAW_FILE" "$FILE"
 
+    if [ "$AGENT_STATUS" = "succeeded" ]; then
+        COMPLETED_AGENTS=$((COMPLETED_AGENTS + 1))
+    else
+        NONFATAL_AGENT_FAILURE=1
+    fi
+
+    CURRENT_AGENT=""
+    write_run_state
+
     OUTPUTS+=("$FILE")
 
     if [ "$AGENT" = "editor" ]; then
@@ -567,6 +655,21 @@ fi
     fi
 
 done
+
+#
+# R0.5-005 final whole-run state
+#
+RUN_STATUS="completed"
+CURRENT_AGENT=""
+FAILED_AGENT=""
+
+if [ "$NONFATAL_AGENT_FAILURE" -eq 1 ]; then
+    RUN_REASON="completed_with_agent_failure"
+else
+    RUN_REASON="success"
+fi
+
+write_run_state
 
 #
 # Create research run record

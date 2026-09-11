@@ -1,0 +1,9 @@
+type: agent_outcome
+run_id: 20260911-072908
+agent: researcher
+invocation_status: succeeded
+artifact_status: promoted
+agent_status: succeeded
+reason: success
+raw_artifact: projects/r0.5-005-boundary-failure/raw/researcher-task-001-072908.raw.txt
+promoted_artifact: projects/r0.5-005-boundary-failure/analysis/researcher-task-001-072908.md

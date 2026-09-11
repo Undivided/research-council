@@ -1,0 +1,10 @@
+type: council_run_state
+run_id: 20260911-072908
+project: r0.5-005-boundary-failure
+run_status: failed
+reason: agent_failure
+current_agent: historian
+failed_agent: historian
+attempted_agents: 2
+completed_agents: 1
+total_agents: 11

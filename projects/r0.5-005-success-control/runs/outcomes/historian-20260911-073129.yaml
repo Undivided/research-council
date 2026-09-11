@@ -1,0 +1,9 @@
+type: agent_outcome
+run_id: 20260911-073129
+agent: historian
+invocation_status: succeeded
+artifact_status: promoted
+agent_status: succeeded
+reason: success
+raw_artifact: projects/r0.5-005-success-control/raw/historian-task-001-073129.raw.txt
+promoted_artifact: projects/r0.5-005-success-control/analysis/historian-task-001-073129.md
