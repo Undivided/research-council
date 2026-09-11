@@ -259,12 +259,12 @@ exactly one pair of marker lines:
 
 Requirements:
 
-- Emit each marker exactly once.
-- Put each marker on a line by itself.
+- Emit each delimiter marker as a standalone line exactly once.
 - The opening marker must occur before the closing marker.
 - Put all report content intended for downstream Council use inside the markers.
 - Do not place canonical report content outside the markers.
-- Do not reproduce the marker strings anywhere else.
+- Inline discussion of marker text is allowed.
+- Do not emit either marker as an additional standalone delimiter line.
 
 The runtime, not the model, decides whether the boundary is valid."
 
