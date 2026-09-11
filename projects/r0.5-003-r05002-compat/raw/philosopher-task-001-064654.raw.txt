@@ -1,0 +1,12 @@
+Thinking...
+Synthetic preamble outside the institutional artifact.
+<<<COUNCIL_ARTIFACT>>>
+# Synthetic Council Artifact
+
+This is clean bounded Council content used to test R0.5-003.
+
+Facts and interpretations remain synthetic.
+
+Confidence: not applicable to deterministic runtime testing.
+<<<END_COUNCIL_ARTIFACT>>>
+Synthetic trailing generation outside the artifact.

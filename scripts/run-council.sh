@@ -23,6 +23,7 @@ fi
 
 mkdir -p "$BASE/runs"
 mkdir -p "$BASE/analysis"
+mkdir -p "$BASE/raw"
 mkdir -p "$KNOWLEDGE/entries"
 
 echo "Running Research Council"
@@ -230,30 +231,131 @@ Choose exactly one disposition:
 - deferred
 - withheld_from_memory
 
-At the very end of your report, emit exactly one machine-readable line:
+Inside your Council artifact, emit exactly one machine-readable line:
 
 FOOL_DISPOSITION: <disposition>
+
+Make it the final report line immediately before the artifact closing marker.
 
 Do not emit or alter artifact_id or epistemic_status.
 Those values are system-owned."
 fi
+
+PROMPT="$PROMPT
+
+R0.5-003 artifact contract:
+
+Your raw generation may contain model-specific preamble outside the artifact
+boundary.
+
+The only content eligible for downstream Council use must appear between
+exactly one pair of marker lines:
+
+<<<COUNCIL_ARTIFACT>>>
+
+<your complete report content>
+
+<<<END_COUNCIL_ARTIFACT>>>
+
+Requirements:
+
+- Emit each marker exactly once.
+- Put each marker on a line by itself.
+- The opening marker must occur before the closing marker.
+- Put all report content intended for downstream Council use inside the markers.
+- Do not place canonical report content outside the markers.
+- Do not reproduce the marker strings anywhere else.
+
+The runtime, not the model, decides whether the boundary is valid."
 
     echo "$PROMPT" > /tmp/council-prompt.txt
 
 echo "Prompt size:"
 wc -c /tmp/council-prompt.txt
 
-if ! echo "$PROMPT" | ollama run "$MODEL" > "$FILE"; then
+RAW_FILE="$BASE/raw/$(basename "${FILE%.md}").raw.txt"
+
+if ! echo "$PROMPT" | ollama run "$MODEL" > "$RAW_FILE"; then
     echo "ERROR: Model invocation failed for $AGENT" >&2
+    echo "Raw output preserved:" >&2
+    echo "$RAW_FILE" >&2
     rm -f "$FILE"
     exit 1
 fi
 
-if [ ! -s "$FILE" ]; then
-    echo "ERROR: Model invocation produced an empty artifact for $AGENT" >&2
+if [ ! -s "$RAW_FILE" ]; then
+    echo "ERROR: Model invocation produced empty raw output for $AGENT" >&2
+    echo "Raw output preserved:" >&2
+    echo "$RAW_FILE" >&2
     rm -f "$FILE"
     exit 1
 fi
+
+OPEN_COUNT=$(
+    grep -Fxc '<<<COUNCIL_ARTIFACT>>>' "$RAW_FILE" || true
+)
+
+CLOSE_COUNT=$(
+    grep -Fxc '<<<END_COUNCIL_ARTIFACT>>>' "$RAW_FILE" || true
+)
+
+if [ "$OPEN_COUNT" -ne 1 ] || [ "$CLOSE_COUNT" -ne 1 ]; then
+    echo "ERROR: Invalid artifact boundary for $AGENT" >&2
+    echo "Opening markers: $OPEN_COUNT" >&2
+    echo "Closing markers: $CLOSE_COUNT" >&2
+    echo "Raw output preserved:" >&2
+    echo "$RAW_FILE" >&2
+    rm -f "$FILE"
+    exit 1
+fi
+
+OPEN_LINE=$(
+    grep -Fnx '<<<COUNCIL_ARTIFACT>>>' "$RAW_FILE" |
+    cut -d: -f1
+)
+
+CLOSE_LINE=$(
+    grep -Fnx '<<<END_COUNCIL_ARTIFACT>>>' "$RAW_FILE" |
+    cut -d: -f1
+)
+
+if [ "$OPEN_LINE" -ge "$CLOSE_LINE" ]; then
+    echo "ERROR: Artifact markers out of order for $AGENT" >&2
+    echo "Raw output preserved:" >&2
+    echo "$RAW_FILE" >&2
+    rm -f "$FILE"
+    exit 1
+fi
+
+TMP_FILE="${FILE}.tmp"
+
+awk '
+    /^<<<COUNCIL_ARTIFACT>>>$/ {
+        capture=1
+        next
+    }
+
+    /^<<<END_COUNCIL_ARTIFACT>>>$/ {
+        exit
+    }
+
+    capture {
+        print
+    }
+' "$RAW_FILE" > "$TMP_FILE"
+
+if ! grep -q '[^[:space:]]' "$TMP_FILE"; then
+    echo "ERROR: Extracted artifact is empty for $AGENT" >&2
+    echo "Raw output preserved:" >&2
+    echo "$RAW_FILE" >&2
+    rm -f "$TMP_FILE" "$FILE"
+    exit 1
+fi
+
+mv "$TMP_FILE" "$FILE"
+
+echo "Raw saved:"
+echo "$RAW_FILE"
 
 if [ "$AGENT" = "fool" ]; then
     FOOL_OUTPUT="$FILE"

@@ -1,0 +1,60 @@
+ARCHIVAL REPORT
+
+## Purpose
+
+This deterministic archival report tests whether the new artifact-boundary
+mechanism remains compatible with the existing durable-memory pipeline.
+
+## Observation
+
+Raw model generation was preserved separately from the validated cognitive
+artifact. The canonical analysis artifact was extracted only from material
+inside the explicit Council artifact markers.
+
+The Judge supplied a constrained institutional disposition for the Fool
+artifact. The disposition remained distinct from the system-owned epistemic
+status.
+
+## Interpretation
+
+The artifact boundary and durable-disposition mechanism address different
+institutional questions. Artifact-boundary integrity determines which portion
+of a model generation is eligible to become Council cognition. Durable
+epistemic disposition records what the institution subsequently does with a
+validated artifact.
+
+These mechanisms should remain independent. Boundary validation must not infer
+epistemic status or disposition, and disposition processing must not infer
+artifact boundaries from natural-language structure.
+
+The raw generation remains useful as audit evidence, debugging material, and
+future model-lineage evidence. It should not automatically enter downstream
+Council context.
+
+The canonical analysis artifact should contain only validated bounded material.
+This prevents visible model preamble, prompt reconstruction, role restatement,
+and other generation exhaust from becoming institutional cognition merely
+because a model emitted it.
+
+## Validation
+
+This synthetic fixture intentionally contains sufficient material to satisfy
+the existing Archivist minimum-size requirement.
+
+Successful execution requires the runtime to preserve raw output, extract the
+bounded artifact, allow downstream Council processing, preserve the Judge's
+machine-readable disposition, create a durable disposition record, and create
+a normal Archivist knowledge entry.
+
+No provenance sidecar is required or expected.
+
+## Conclusion
+
+A successful run demonstrates structural compatibility between R0.5-003
+artifact-boundary integrity and R0.5-002 durable epistemic disposition.
+
+Raw generation remains evidence.
+
+Validated bounded output becomes the cognitive artifact.
+
+Institutional disposition is applied only after that artifact exists.

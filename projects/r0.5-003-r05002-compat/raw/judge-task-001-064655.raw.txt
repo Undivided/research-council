@@ -1,0 +1,13 @@
+Thinking...
+Synthetic preamble outside the institutional artifact.
+<<<COUNCIL_ARTIFACT>>>
+# Judge Evaluation
+
+This deterministic fixture tests compatibility between the R0.5-003 artifact
+boundary and the R0.5-002 durable-disposition interface.
+
+The synthetic Fool artifact is admitted solely for runtime testing.
+
+FOOL_DISPOSITION: accepted_into_memory
+<<<END_COUNCIL_ARTIFACT>>>
+Synthetic trailing generation outside the artifact.

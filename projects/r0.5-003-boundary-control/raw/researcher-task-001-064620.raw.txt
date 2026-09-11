@@ -1,0 +1,10 @@
+Thinking...
+Synthetic model preamble that must remain raw only.
+
+<<<COUNCIL_ARTIFACT>>>
+# Researcher Artifact
+
+CLEAN_RESEARCHER_ARTIFACT
+
+This is the validated cognitive artifact.
+<<<END_COUNCIL_ARTIFACT>>>

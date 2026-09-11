@@ -1,0 +1,7 @@
+Thinking...
+Synthetic malformed emission.
+
+<<<COUNCIL_ARTIFACT>>>
+# Historian Artifact
+
+This intentionally has no closing artifact marker.
