@@ -1,9 +1,19 @@
 # Turtle Intelligence Architecture
 # Master Index
 
-## Purpose
+## Identity
 
-The Turtle archive records the evolution of intelligence architecture through versioned provenance artifacts.
+Repository:
+
+research-council
+
+System:
+
+Turtle Intelligence Architecture
+
+Purpose:
+
+Maintain a versioned provenance record of intelligence architecture evolution.
 
 ---
 
@@ -11,15 +21,12 @@ The Turtle archive records the evolution of intelligence architecture through ve
 
 Version:
 
-v1.1 Expansion Era
+v1.1 Expansion Era Complete
 
-Current Completed Range:
+Latest Commit:
 
-100-118
+119 — Universal Intelligence Expansion Review
 
-Next:
-
-119 — v1.1 Expansion Review
 
 ---
 
@@ -27,35 +34,45 @@ Next:
 
 ## v1.0
 
-### Commit 100
-Universal Intelligence Operating Architecture
+100 — Universal Intelligence Operating Architecture
 
-### Commit 101
-Universal Wisdom Architecture
+Core intelligence structure.
 
-### Commit 102
-Universal Consciousness Research Layer
+101 — Universal Wisdom Architecture
 
-### Commit 103
-Universal Future Design System
+Judgment and responsibility layer.
 
-### Commit 104
-Universal Civilization Synthesis
+102 — Universal Consciousness Research Layer
 
-### Commit 105
-Universal Creativity Architecture
+Research into awareness and cognition.
 
-### Commit 106
-Universal Discovery Engine
+103 — Universal Future Design System
 
-### Commit 107
-Universal Science Architecture
+Future modeling and scenario planning.
 
-### Commit 108
-Universal Engineering Intelligence Layer
+104 — Universal Civilization Synthesis
 
-### Commit 109
-v1.0 Universal Intelligence Foundation Review
+Civilization-scale systems modeling.
+
+105 — Universal Creativity Architecture
+
+Creation and innovation systems.
+
+106 — Universal Discovery Engine
+
+Structured discovery processes.
+
+107 — Universal Science Architecture
+
+Scientific understanding framework.
+
+108 — Universal Engineering Intelligence Layer
+
+Knowledge-to-system transformation.
+
+109 — v1.0 Foundation Review
+
+Foundation validation.
 
 ---
 
@@ -63,36 +80,50 @@ v1.0 Universal Intelligence Foundation Review
 
 ## v1.1
 
-### Commit 110
-Universal Learning Architecture
+110 — Universal Learning Architecture
 
-### Commit 111
-Universal Creativity Engine Expansion
+Adaptive improvement.
 
-### Commit 112
-Universal Problem Solving Architecture
+111 — Universal Creativity Engine Expansion
 
-### Commit 113
-Universal Research Intelligence
+Creative amplification.
 
-### Commit 114
-Universal Simulation Intelligence
+112 — Universal Problem Solving Architecture
 
-### Commit 115
-Universal Design Intelligence
+General problem solving.
 
-### Commit 116
-Universal Exploration Systems
+113 — Universal Research Intelligence
 
-### Commit 117
-Universal Knowledge Generation
+Structured investigation.
 
-### Commit 118
-Universal Intelligence Amplification
+114 — Universal Simulation Intelligence
+
+Virtual testing and prediction.
+
+115 — Universal Design Intelligence
+
+Intentional system creation.
+
+116 — Universal Exploration Systems
+
+Unknown discovery.
+
+117 — Universal Knowledge Generation
+
+Knowledge expansion.
+
+118 — Universal Intelligence Amplification
+
+Capability scaling.
+
+119 — v1.1 Expansion Review
+
+Expansion validation.
 
 ---
 
 # Archive Structure
+
 turtle/
 
 ├── commits/
@@ -104,12 +135,12 @@ turtle/
 
 # Provenance Rules
 
-Each Turtle commit should contain:
+Every Turtle commit must contain:
 
 - identifier
-- title
-- dependencies
-- principles
+- parent relationship
+- purpose
+- evolution principle
 - architecture
 - acceptance criteria
 - status
@@ -118,6 +149,4 @@ Each Turtle commit should contain:
 
 # Status
 
-Turtle archive initialized.
-
-Ready for architecture migration.
+Turtle v1.1 operational archive established.
