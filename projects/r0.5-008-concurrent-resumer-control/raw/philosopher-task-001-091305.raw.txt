@@ -1,0 +1,5 @@
+<<<COUNCIL_ARTIFACT>>>
+# philosopher Control
+
+Deterministic successful R0.5-008 artifact for philosopher.
+<<<END_COUNCIL_ARTIFACT>>>

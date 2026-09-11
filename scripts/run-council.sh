@@ -94,6 +94,34 @@ write_agent_outcome() {
 # R0.5-005: durable whole-run state.
 RUN_STATE_FILE="$BASE/runs/state-$RUN_ID.yaml"
 
+# R0.5-008: one live resumer may own a logical run at a time.
+#
+# The pathname is durable, but ownership is determined by the kernel lock,
+# not by lock-file existence. The open descriptor remains held for the
+# lifetime of this process and is automatically released on process exit.
+RESUME_LOCK_FILE="$BASE/runs/resume-$RUN_ID.lock"
+RESUME_LOCK_FD=""
+
+if [ "$RUN_MODE" = "resume" ]; then
+    if ! command -v flock >/dev/null 2>&1; then
+        echo "ERROR: flock is required for safe run resumption." >&2
+        exit 1
+    fi
+
+    if ! exec {RESUME_LOCK_FD}>>"$RESUME_LOCK_FILE"; then
+        echo "ERROR: Unable to open resume lock:" >&2
+        echo "$RESUME_LOCK_FILE" >&2
+        exit 1
+    fi
+
+    if ! flock -n "$RESUME_LOCK_FD"; then
+        echo "ERROR: Another process already owns resumption of this run." >&2
+        echo "Project: $PROJECT" >&2
+        echo "Run ID:  $RUN_ID" >&2
+        exit 75
+    fi
+fi
+
 if [ "$RUN_MODE" = "resume" ]; then
     if [ ! -f "$RUN_STATE_FILE" ]; then
         echo "ERROR: Resume state does not exist:" >&2

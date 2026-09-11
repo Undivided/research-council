@@ -1,0 +1,5 @@
+<<<COUNCIL_ARTIFACT>>>
+# historian Control
+
+Deterministic successful R0.5-008 artifact for historian.
+<<<END_COUNCIL_ARTIFACT>>>
