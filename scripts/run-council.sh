@@ -156,10 +156,10 @@ if [ "$RUN_MODE" = "resume" ]; then
         exit 1
     fi
 
-    if [ -e "$BASE/runs/run-$RUN_ID.md" ]; then
-        echo "ERROR: Final run record already exists; refusing resume." >&2
-        exit 1
-    fi
+    # R0.5-009: a canonical run record may already exist if interruption
+    # occurred after run-record publication but before terminal state
+    # publication. Durable run state, not run-record existence, determines
+    # whether the logical run is resumable.
 
     QUESTION=$(cat "$RUN_QUESTION_FILE")
     MODEL=$(cat "$RUN_MODEL_FILE")
@@ -169,23 +169,27 @@ else
 fi
 
 write_run_state() {
+    local status="${1-$RUN_STATUS}"
+    local reason="${2-$RUN_REASON}"
+    local current_agent="${3-$CURRENT_AGENT}"
+    local failed_agent="${4-$FAILED_AGENT}"
     local tmp_file="${RUN_STATE_FILE}.tmp"
 
     {
         echo "type: council_run_state"
         echo "run_id: $RUN_ID"
         echo "project: $PROJECT"
-        echo "run_status: $RUN_STATUS"
-        echo "reason: $RUN_REASON"
+        echo "run_status: $status"
+        echo "reason: $reason"
 
-        if [ -n "$CURRENT_AGENT" ]; then
-            echo "current_agent: $CURRENT_AGENT"
+        if [ -n "$current_agent" ]; then
+            echo "current_agent: $current_agent"
         else
             echo "current_agent: null"
         fi
 
-        if [ -n "$FAILED_AGENT" ]; then
-            echo "failed_agent: $FAILED_AGENT"
+        if [ -n "$failed_agent" ]; then
+            echo "failed_agent: $failed_agent"
         else
             echo "failed_agent: null"
         fi
@@ -1020,40 +1024,41 @@ fi
 done
 
 #
-# R0.5-005 final whole-run state
+# R0.5-009 terminal publication integrity
 #
-RUN_STATUS="completed"
-CURRENT_AGENT=""
-FAILED_AGENT=""
+# All successful per-agent outcomes are already durable here.
+#
+# The final run record is prepared in a noncanonical temporary path and
+# atomically published first. The canonical completed whole-run state is
+# published last.
+#
+# Until that final state publication succeeds, RUN_STATUS deliberately
+# remains "running" so R0.5-006 interruption handling remains active.
+#
 
 if [ "$NONFATAL_AGENT_FAILURE" -eq 1 ]; then
-    RUN_REASON="completed_with_agent_failure"
+    TERMINAL_RUN_REASON="completed_with_agent_failure"
 else
-    RUN_REASON="success"
+    TERMINAL_RUN_REASON="success"
 fi
 
-write_run_state
-
-# Normal Council execution has reached a durable terminal state.
-trap - INT TERM HUP
-
 #
-# Create research run record
+# Prepare research run record in a noncanonical temporary file.
 #
 RUN_FILE="$BASE/runs/run-$RUN_ID.md"
+RUN_FILE_TMP="${RUN_FILE}.tmp"
 
-cp "$HOME/research-council/templates/run-template.md" "$RUN_FILE"
+cp "$HOME/research-council/templates/run-template.md" "$RUN_FILE_TMP"
 
-sed -i "s/{{RUN_ID}}/$RUN_ID/g" "$RUN_FILE"
-sed -i "s/{{PROJECT}}/$PROJECT/g" "$RUN_FILE"
-sed -i "s/{{DATE}}/$(date +%Y-%m-%d)/g" "$RUN_FILE"
-sed -i "s/{{MODEL}}/$MODEL/g" "$RUN_FILE"
-sed -i "s/{{QUESTION}}/$QUESTION/g" "$RUN_FILE"
+sed -i "s/{{RUN_ID}}/$RUN_ID/g" "$RUN_FILE_TMP"
+sed -i "s/{{PROJECT}}/$PROJECT/g" "$RUN_FILE_TMP"
+sed -i "s/{{DATE}}/$(date +%Y-%m-%d)/g" "$RUN_FILE_TMP"
+sed -i "s/{{MODEL}}/$MODEL/g" "$RUN_FILE_TMP"
+sed -i "s/{{QUESTION}}/$QUESTION/g" "$RUN_FILE_TMP"
 
 #
 # Populate generated outputs
 #
-
 {
     echo
     echo "## Outputs Generated"
@@ -1115,7 +1120,28 @@ sed -i "s/{{QUESTION}}/$QUESTION/g" "$RUN_FILE"
     echo
     echo "- Re-run council with expanded sources."
 
-} >> "$RUN_FILE"
+} >> "$RUN_FILE_TMP"
+
+# Atomic same-filesystem publication of the complete run record.
+mv "$RUN_FILE_TMP" "$RUN_FILE"
+
+#
+# Publish terminal whole-run state LAST.
+#
+# Explicit values are supplied so global RUN_STATUS remains "running"
+# until the atomic state replacement has successfully returned. If a
+# catchable signal arrives before that point, R0.5-006 may still publish
+# interrupted state.
+#
+write_run_state "completed" "$TERMINAL_RUN_REASON" "" ""
+
+# The durable terminal representation is now complete.
+RUN_STATUS="completed"
+RUN_REASON="$TERMINAL_RUN_REASON"
+CURRENT_AGENT=""
+FAILED_AGENT=""
+
+trap - INT TERM HUP
 
 echo
 echo "Run record:"

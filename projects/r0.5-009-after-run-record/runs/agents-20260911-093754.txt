@@ -1,0 +1,11 @@
+researcher
+historian
+philosopher
+strategist
+skeptic
+red-team
+fool
+editor
+judge
+archivist
+librarian

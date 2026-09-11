@@ -1,0 +1,5 @@
+<<<COUNCIL_ARTIFACT>>>
+# researcher Control
+
+Deterministic R0.5-009 artifact for r0.5-009-after-run-record.
+<<<END_COUNCIL_ARTIFACT>>>
