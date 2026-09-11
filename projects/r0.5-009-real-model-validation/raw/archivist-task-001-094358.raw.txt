@@ -1,0 +1,214 @@
+Thinking...
+Archivist agent in a research council.
+Evaluate whether terminal-state atomicity (TSA) preserves normal Council ex[2D[K
+execution, durable run state, safe resumability, artifact integrity, per-ag[6D[K
+per-agent outcomes, institutional disposition, and final run-record publica[7D[K
+publication.
+
+        *   Existing knowledge base (meta-science on decision-making, cogni[5D[K
+cognitive biases, etc.).
+        *   Current council reports (Editor Synthesis and Judge Evaluation)[11D[K
+Evaluation).
+        *   System architecture files (Markdown storage, multi-agent reason[6D[K
+reasoning).
+
+        *   Separate facts from interpretations.
+        *   Identify unknowns.
+        *   Include confidence level + reasoning.
+        *   Do not pretend certainty.
+        *   Challenge weak assumptions.
+        *   Distinguish previous knowledge from new conclusions.
+        *   Preserve disagreements, uncertainty, and unresolved questions.
+        *   Wrap the final report in `<<<COUNCIL_ARTIFACT>>>` and `<<<END_C[9D[K
+`<<<END_COUNCIL_ARTIFACT>>>`.
+
+    *   *What is TSA?* A theoretical proposal where the transition to a fin[3D[K
+finished state is atomic (all or nothing).
+    *   *Current Status:* Not yet implemented.
+    *   *Facts:* Storage is Markdown; Execution is multi-agent reasoning ch[2D[K
+chain; Failures related to retrieval gap.
+    *   *Evaluation of Metrics:*
+        *   Normal Execution: Preserved (logic doesn't change).
+        *   Durable Run State: Improved (no "zombie" partial states).
+        *   Safe Resumability: Contested (Clean recovery vs. loss of interm[6D[K
+intermediate checkpoints).
+        *   Artifact Integrity: Preserved (no truncated files).
+        *   Per-Agent Outcomes: Fragile (loss of intermediate work if failu[5D[K
+failure occurs before commit).
+        *   Institutional Disposition: Preserved (no "knowledge pollution")[11D[K
+pollution").
+        *   Final Run-Record Publication: Optimized (single indivisible eve[3D[K
+event).
+    *   *Central Tension:* Integrity (Reliability) vs. Availability.
+    *   *Weak Assumptions:* Markdown is natively atomic (False); TSA alone [K
+is sufficient for resumability (False).
+    *   *Proposed Solution:* Dual-layer model (Transient vs. Archival).
+
+    *   *Introduction:* Define the subject and status of TSA.
+    *   *Factual Basis:* Current system state.
+    *   *Evaluation Matrix:* The 7 metrics, preserving the conflicts.
+    *   *Critical Tensions:* Integrity vs. Availability.
+    *   *Challenge to Assumptions:* Technical and logical critiques.
+    *   *Identified Unknowns:* Technical implementation gaps.
+    *   *Conclusion/Synthesis:* New conclusions vs. previous knowledge.
+    *   *Confidence Assessment:* Reasoning for the level.
+
+    *   *Fact vs. Interpretation:* Ensure the status of TSA (theoretical) i[1D[K
+is a fact, and its projected impact is an interpretation.
+    *   *Uncertainty:* Clearly mark the "Contested" status of resumability.[13D[K
+resumability.
+    *   *Previous vs. New:* Contrast the value of raw reports [K
+(previous) with the risk of "process erasure" (new).
+    *   *Confidence:* Medium, because we are analyzing a proposal against a[1D[K
+a high-level architecture.
+...done thinking.
+
+<<<COUNCIL_ARTIFACT>>>
+
+**ARCHIVAL REPORT: Evaluation of Terminal-State Atomicity (TSA) in Council [K
+Execution**
+**Archivist ID:** RC-ARCH-01
+**Date:** 2026-09-10
+**Subject:** Evaluation of the preservation of system integrity, execution [K
+continuity, and institutional disposition via the implementation of termina[7D[K
+terminal-state atomicity.
+
+---
+
+### 1. ESTABLISHED FACTUAL BASIS
+*The following points represent the documented state of the Council's archi[5D[K
+architecture and the current status of the TSA proposal.*
+
+*   **Implementation Status:** Terminal-state atomicity (TSA) is **not curr[4D[K
+currently implemented**. It is a theoretical proposal under evaluation.
+*   **Storage Layer:** The Council utilizes human-readable Markdown files f[1D[K
+for permanent storage (`/system/architecture.md`).
+*   **Execution Model:** The Council operates via a multi-agent reasoning c[1D[K
+chain where specialized agents contribute sequentially to a cumulative resu[4D[K
+result.
+*   **Failure History:** Documented systemic failures are primarily charact[7D[K
+characterized by the "Implementation Gap"—the disconnect between the existe[6D[K
+existence of stored knowledge and the retrieval layer's ability to make it [K
+usable (`/system/failures.md`).
+*   **Filesystem Nature:** Standard filesystems (used for the Markdown stor[4D[K
+storage) are not natively atomic.
+
+---
+
+### 2. EVALUATION OF METRICS
+*The following evaluates the seven criteria based on synthesized agent repo[4D[K
+reports. Disagreements are preserved as they indicate critical system risks[5D[K
+risks.*
+
+| Metric | Status | Synthesis of Reasoning & Preserved Conflict |
+| :--- | :--- | :--- |
+| **Normal Council Execution** | **Preserved** | Consensus that TSA does no[2D[K
+not alter core reasoning logic, though it may introduce minor terminal late[4D[K
+latency during the "prepare/commit" phase. |
+| **Durable Run State** | **Improved** | TSA is projected to eliminate "zom[4D[K
+"zombie states" (partial finishes), ensuring a binary transition from Activ[5D[K
+Active to Finished. |
+| **Safe Resumability** | **Contested** | **Fundamental Conflict:** Propone[7D[K
+Proponents argue it provides a clean recovery point. Opponents (Strategist,[12D[K
+(Strategist, Skeptic) argue it *destroys* resumability by erasing intermedi[9D[K
+intermediate checkpoints, necessitating full restarts upon failure. |
+| **Artifact Integrity** | **Preserved** | Prevents truncated files or miss[4D[K
+missing metadata; the `Council_Artifact` is committed only in its entirety.[9D[K
+entirety. |
+| **Per-Agent Outcomes** | **Fragile** | **Risk:** If atomicity is exclusiv[8D[K
+exclusively terminal, intermediate cognitive outputs are ephemeral. Failure[7D[K
+Failure at $T-1$ results in the total loss of all agent work for that run. [K
+|
+| **Institutional Disposition** | **Preserved** | Prevents "knowledge pollu[5D[K
+pollution" by ensuring only complete, verified runs enter the archival reco[4D[K
+record. |
+| **Final Run-Record Publication** | **Optimized** | Transforms the publica[7D[K
+publication and metadata commit into a single, indivisible event. |
+
+---
+
+### 3. ANALYSIS OF CENTRAL TENSIONS
+The evaluation reveals a systemic trade-off between **Integrity** and **Ava[5D[K
+**Availability**.
+
+*   **The Integrity Framework (Reliability):** Prioritizes the truthfulness[12D[K
+truthfulness and consistency of the institutional record. Within this frame[5D[K
+framework, a "perfect failure" (total loss) is preferable to a "corrupted s[1D[K
+success" (partial/truncated data).
+*   **The Availability Framework (Continuity):** Prioritizes the survival o[1D[K
+of the research process. Within this framework, "imperfect evidence" (parti[6D[K
+(partial data) is superior to "perfect silence" (total loss).
+
+**Archival Observation:** The "Resumability Paradox" suggests that while TS[2D[K
+TSA is a necessary condition for *final record* integrity, it is an insuffi[7D[K
+insufficient—and potentially obstructive—condition for *execution* continui[8D[K
+continuity.
+
+---
+
+### 4. CHALLENGE TO WEAK ASSUMPTIONS
+*   **Assumption: "Markdown files support atomic commits natively."**
+    *   *Challenge:* Technically false. Standard filesystems do not support[7D[K
+support this. TSA requires an external wrapper (e.g., staging-and-swap or t[1D[K
+transactional logs) not currently documented in the architecture.
+*   **Assumption: "TSA is sufficient for safe resumability."**
+    *   *Challenge:* Resumability requires *intermediate* state preservatio[11D[K
+preservation. Terminal atomicity only secures the *end* state; it does not [K
+provide a mechanism to resume from a mid-point.
+*   **Assumption: "The terminal state is a discrete event."**
+    *   *Challenge:* Treating the terminal state as a unique atomic event m[1D[K
+may mask a fragmented pipeline where the "atomic switch" is decoupled from [K
+the actual cognitive work of the terminal phase.
+
+---
+
+### 5. IDENTIFIED UNKNOWNS
+*   **The Checkpoint Variable:** Whether a "Transient Layer" for non-atomic[10D[K
+non-atomic, high-granularity checkpoints can coexist with an atomic Archiva[7D[K
+Archival Layer without violating institutional disposition.
+*   **Computational Overhead:** The resource cost of mandatory full restart[7D[K
+restarts (mandated by TSA) versus the overhead of managing partial states.
+*   **Idempotency:** Whether the finalization process can be repeated witho[5D[K
+without creating side effects or duplicate records.
+*   **Implementation Method:** Whether the mechanism will utilize filesyste[9D[K
+filesystem locks (risking deadlocks) or a database (risking the "human-read[11D[K
+"human-readable Markdown" principle).
+
+---
+
+### 6. DISTINCTION: PREVIOUS KNOWLEDGE VS. NEW CONCLUSIONS
+
+**Previous Knowledge:**
+The Council values the preservation of raw reports and has documented a str[3D[K
+struggle with the gap between storage and retrieval. The system prioritizes[11D[K
+prioritizes human-readability and portability.
+
+**New Synthesized Conclusions:**
+*   **Decoupling Requirement:** To resolve the Integrity-Availability tensi[5D[K
+tension, the Council must decouple the **Transient Layer** (for execution r[1D[K
+resumability/checkpoints) from the **Archival Layer** (for atomic instituti[9D[K
+institutional commits).
+*   **Process Erasure Risk:** There is a documented risk that terminal atom[4D[K
+atomicity erases the "friction and negotiation" of the concluding process, [K
+creating a "Disposition Mirage"—a false history of a seamless arrival at a [K
+result.
+*   **State-Change Model:** The transition to a terminal state should be mo[2D[K
+modeled as a binary state-change (Commit $[A, B, C]$) rather than a sequenc[7D[K
+sequence of writes.
+
+---
+
+### 7. CONFIDENCE ASSESSMENT
+
+**Overall Confidence Level: MEDIUM**
+
+**Reasoning:**
+*   **High Confidence** in the logical conflict between terminal integrity [K
+and intermediate resumability.
+*   **Medium Confidence** in the theoretical benefits for data integrity.
+*   **Low Confidence** in any claim regarding the *current* preservation of[2D[K
+of these states, as the mechanism is not yet implemented and is being evalu[5D[K
+evaluated against a high-level conceptual architecture.
+
+<<<END_COUNCIL_ARTIFACT>>>
+

@@ -1,0 +1,1 @@
+Evaluate whether terminal-state atomicity preserves normal Council execution, durable run state, safe resumability, artifact integrity, per-agent outcomes, institutional disposition, and final run-record publication.
