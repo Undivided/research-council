@@ -120,9 +120,33 @@ Maintain:
 
 ---
 
+## Phase Boundaries
+
+The Council separates cognitive functions intentionally.
+
+Different phases require different information environments.
+
+Examples:
+
+Exploration benefits from reduced institutional assumptions.
+
+Evaluation benefits from comparison and criticism.
+
+Preservation requires provenance and confidence.
+
+Retrieval requires organization without eliminating uncertainty.
+
+Maintaining these boundaries prevents:
+
+- exploration becoming premature consensus
+- memory becoming unquestioned authority
+- evaluation becoming simple confirmation
+
 ## Future Direction
 
-Future Council evolution should focus on improving the loop:
+Future Council evolution should improve the transitions between phases rather than collapse them into a single undifferentiated intelligence.
+
+Future development should focus on improving:
 
 - better exploration
 - better selection
@@ -130,4 +154,4 @@ Future Council evolution should focus on improving the loop:
 - better retrieval
 - clearer human understanding
 
-without collapsing the distinctions between these phases.
+while preserving the distinctions between these phases.
