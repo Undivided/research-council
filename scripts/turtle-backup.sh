@@ -52,4 +52,24 @@ git status --short
 
 echo
 
+# Google Drive sync
+
+if [[ "${1:-}" == "--sync" ]]; then
+
+    REMOTE="research-council-backup:Research Council Archive/Turtle Archive"
+
+    echo "Starting Google Drive sync..."
+    echo
+
+    rclone sync \
+        "$TURTLE" \
+        "$REMOTE" \
+        --verbose
+
+    echo
+    echo "✓ Google Drive sync complete"
+
+fi
+
+echo
 echo "Backup check complete."
