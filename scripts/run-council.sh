@@ -936,11 +936,23 @@ if [ "$AGENT" = "archivist" ]; then
     echo "---" > "$KNOWLEDGE_FILE"
     echo "id: $KNOWLEDGE_TIMESTAMP" >> "$KNOWLEDGE_FILE"
     echo "type: research_entry" >> "$KNOWLEDGE_FILE"
+
+    echo "origin:" >> "$KNOWLEDGE_FILE"
+    echo "  run_id: $RUN_ID" >> "$KNOWLEDGE_FILE"
+    echo "  project: $PROJECT" >> "$KNOWLEDGE_FILE"
+    echo "  question: $QUESTION" >> "$KNOWLEDGE_FILE"
+
+    echo "provenance:" >> "$KNOWLEDGE_FILE"
+    echo "  source_agent: $AGENT" >> "$KNOWLEDGE_FILE"
+    echo "  source_artifact: ${FILE#"$HOME/research-council/"}" >> "$KNOWLEDGE_FILE"
+
     echo "domain:" >> "$KNOWLEDGE_FILE"
     echo "  - scientific_decision_making" >> "$KNOWLEDGE_FILE"
+
     echo "topics:" >> "$KNOWLEDGE_FILE"
     echo "  - research_quality" >> "$KNOWLEDGE_FILE"
     echo "  - decision_frameworks" >> "$KNOWLEDGE_FILE"
+
     echo "confidence: medium" >> "$KNOWLEDGE_FILE"
     echo "created: $(date +%Y-%m-%d)" >> "$KNOWLEDGE_FILE"
     echo "---" >> "$KNOWLEDGE_FILE"
