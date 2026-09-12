@@ -132,5 +132,98 @@ Improved future action
 
 # Notes
 
-Add observations here.
+## 2026-09-11 — Epistemic Fundamentals and Emergence
 
+A useful methodological analogy emerged from discussion of simple computational systems.
+
+The analogy is not that Research Council is a physics model or that epistemology is reducible to code.
+
+The useful structural comparison is this:
+
+A small set of primitives can interact repeatedly and produce higher-order structure that is not obvious from any primitive in isolation.
+
+For Research Council, the candidate primitives are epistemic and relational rather than purely computational:
+
+- perspective
+- claim
+- evidence
+- disagreement
+- skepticism
+- uncertainty
+- memory
+- provenance
+- retrieval
+- role boundaries
+- adjudication
+- feedback
+- environment
+
+The Agora is the interaction space in which these primitives constrain and transform one another.
+
+The current working posture is deliberately observational:
+
+    identify a few fundamentals
+        ↓
+    combine them cleanly
+        ↓
+    preserve the interactions
+        ↓
+    observe what emerges
+        ↓
+    record it
+        ↓
+    vary one condition
+        ↓
+    repeat
+
+Do not force a grand explanation yet.
+
+The immediate task is to describe what the system does, preserve evidence, compare neighboring configurations, and look for recurring structures and invariants.
+
+A useful signal from systems thinking is that a structure "hangs together": distinct parts make one another more intelligible and produce coherent behavior across scales.
+
+A working distinction:
+
+    collection:
+    parts make sense independently
+
+    system:
+    parts make one another make more sense
+
+Research Council increasingly appears to have this second property.
+
+The Council also forms a strange loop:
+
+    Council produces knowledge
+        ↓
+    knowledge changes future Council reasoning
+        ↓
+    changed reasoning changes institutional structure
+        ↓
+    changed institution alters what knowledge can emerge
+        ↓
+    repeat
+
+This does not yet explain why the pattern is productive.
+
+Leave the "why" for later.
+
+For now, use the process because it works and because complex structures can emerge from a relatively small set of interacting fundamentals.
+
+Methodological practices worth borrowing from rule-based computational research:
+
+- start with small primitives
+- compose before theorizing
+- vary one rule or condition at a time when possible
+- run the system rather than assuming the outcome
+- preserve surprising and failed branches
+- distinguish primitive rules from emergent regularities
+- look for invariants across different substrates and configurations
+- explore nearby rule spaces, not only optimize one successful design
+- delay interpretation until the phenomenon is described clearly
+
+Possible future direction:
+
+Construct an "epistemic rule-space" in which roles, information topology, memory policy, retrieval policy, challenge structure, adjudication, and environmental constraints can be varied systematically while measuring what kinds of higher-order cognitive behavior emerge.
+
+This is a research direction, not a claim that such a formalism already exists.
