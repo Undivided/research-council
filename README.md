@@ -79,8 +79,7 @@ The next useful result may be a smaller claim, a better control, or a reason to 
 
 If this work is useful or interesting to you, you can help support its continued development.
 
-[**Support via PayPal**](https://paypal.me/EdwardsZero)
-
+[**Support via PayPal**](https://paypal.me/EdwardsZero) · [**Support with crypto**](https://donatr.ee/undivided)
 
 Feedback, careful reading, and reproducible contributions are welcome too.
 
