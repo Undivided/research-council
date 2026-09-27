@@ -8,7 +8,16 @@ A pixie follows a glimmer. A turtle makes room to carry it home. Somewhere along
 
 This is an independent project by **Charles Edwards**, developed with AI assistance. It connects scientific questions, research methods, software, language, and creative play. The goal is to turn curiosity into work that another person can inspect, challenge, reproduce, or carry forward.
 
-[Explore the project](#explore-the-project) · [Research themes](#research-themes) · [Current work](#current-work) · [Contribute](#contribute) · [Support](#support-the-project)
+[Start with two questions](#start-with-two-questions) · [Explore the project](#explore-the-project) · [Research themes](#research-themes) · [Current work](#current-work) · [Contribute](#contribute) · [Support](#support-the-project)
+
+## Start with two questions
+
+Two themes provide a practical way into the wider project:
+
+- **Source, storage, and provenance:** Where did this output or claim originate? Which evidence is independent, and what was filtered out or lost before it reached us?
+- **Intervention and the value of a check:** Which observation or probe could separate the competing explanations, and could its answer improve the decision enough to justify its cost?
+
+These questions connect the physics, measurement, and software work. Tracing the surviving evidence and examining how it was selected are both part of the job.
 
 ## Explore the project
 
@@ -35,6 +44,18 @@ The playful names help us remember where a question began. The project records e
 5. **Bring the result home.** Preserve the source, calculation, result, limits, and next question so someone else can continue.
 
 A story, an analogy, a hypothesis, a calculation, and an observation each keep their own kind of claim. AI assistance supports exploration and implementation; claims still need evidence and critical review.
+
+## Five questions before a check
+
+1. What decision or claim are we examining?
+2. Which competing explanations remain?
+3. What observation would make them predict different outcomes?
+4. Could selection, copying, or measurement error manufacture that distinction?
+5. Is the check worth its full cost—and what result means we should stop or reconsider?
+
+Thanks to **Erik** for connecting these themes to survivorship and gatekeeper bias, and for sharing his **Keypoint Focus** formulation: identify the question whose answer separates the competing possibilities. It helps focus the next investigation.
+
+A yes/no question can still yield inconclusive evidence. Keep uncertainty and explanations outside the current list in view; eliminating the options we considered does not guarantee that the list was complete.
 
 ## Research themes
 
