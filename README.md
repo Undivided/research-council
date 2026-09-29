@@ -79,7 +79,7 @@ These themes overlap. A project keeps one evidence record even when several idea
 
 ## Current work
 
-As of **26 September 2026**, the research portfolio contains **36 candidate projects**. They include mathematical counterexamples, bounded synthetic experiments, theory investigations, and proposed measurement tests. Each candidate tracks its evidence, controls, limitations, and next discriminating step.
+As of **29 September 2026**, the research portfolio contains **36 candidate projects**. They include mathematical counterexamples, bounded synthetic experiments, theory investigations, and proposed measurement tests. Each candidate tracks its evidence, controls, limitations, and next discriminating step.
 
 A few examples show the direction:
 
@@ -91,6 +91,16 @@ A few examples show the direction:
 - **Thermal response:** TR21 examines finite thermal response and closure adequacy; TR30 connects radiation history and blackbody tests to the thermodynamic theme.
 
 These are scoped research records. The portfolio does not yet establish a new experimentally validated physical theory; independent replication, physical validation, and novelty review remain part of the work ahead.
+
+### Compression and occlusion: a proposed test
+
+Thanks to [UmeshCode1](https://github.com/UmeshCode1) for proposing a closer look at sharp failures in compressed neural representations. This now extends **TR13: Task-preserving compression with model checks**.
+
+The proposed test measures when a specified task exceeds its allowed error, while varying input occlusion and compression budget separately. It compares estimated landmarks, independent reference landmarks, and complementary signals against matched-resource controls. Missing outputs and plausible-but-wrong estimates count in the evaluation.
+
+The first step is to reconcile the reported experiment with the contributor's [published hand-benchmark data](https://github.com/UmeshCode1/hand-gesture-occlusion-benchmark), then freeze the dataset, metric and replication protocol. Connections to critical phenomena remain hypotheses requiring scaling evidence.
+
+**Status:** proposed; no new benchmark has been run in this portfolio. The extension remains within the existing 36 candidates.
 
 ## Contribute
 
