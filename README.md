@@ -104,6 +104,8 @@ The first step is to reconcile the reported experiment with the contributor's [p
 
 ## Contribute
 
+**Contact:** [blue.ofsol@gmail.com](mailto:blue.ofsol@gmail.com)
+
 You are welcome to bring a question, reproduction, correction, counterexample, independent derivation, or practical test design.
 
 A useful contribution names the project or claim, identifies its assumptions and sources, and explains what observation or calculation would change the conclusion. For numerical work, include enough code, inputs, and environment information to reproduce the result. Compare against a clear baseline and retain unsuccessful outcomes.
